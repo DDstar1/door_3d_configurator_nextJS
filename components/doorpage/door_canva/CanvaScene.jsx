@@ -13,7 +13,7 @@ export default function AlbaCanva() {
       </GizmoHelper>
       <axesHelper args={[10]} />
       <gridHelper args={[40, 20, 'red', 0x55ccff]} />
-      <OrbitControls target={[0, 1, 0]} enablePan={false} minDistance={2} maxDistance={2} minPolarAngle={Math.PI / 2} maxPolarAngle={Math.PI / 2} />
+      <OrbitControls target={[0, 1, 0]} enablePan={false} minDistance={1} maxDistance={2} minPolarAngle={Math.PI / 2} maxPolarAngle={Math.PI / 2} />
       <directionalLight intensity={2} position={[2, 5, 1]} />
       <Suspense fallback={null}>
         <Environment preset="city" />
