@@ -1,11 +1,12 @@
 import { create } from "zustand";
+import DoorState from "@/utils/my_types";
 
-const initialDoorState = {
+const initialDoorState: DoorState = {
   lueftung: "Ohne Kernlochbohrung",
   dichtung: "Standard (Zargendichtung)",
   boden: "Ohne Bodendichtung",
   lichtoeffnung: "Norm-LÖ 1011 V003",
-  //verglasung: "Ohne Verglasung",
+
   verglasung: "Chinchilla Weiß",
   doorType: "Stumpf",
   anschlag: "DIN links",
