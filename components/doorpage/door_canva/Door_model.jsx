@@ -5,9 +5,27 @@ Command: npx gltfjsx@6.5.3 door_model.glb
 
 import React from 'react';
 import { useGLTF } from '@react-three/drei';
+import { useDoorStore } from '@/store/door_store';
 
 export function Model(props) {
   const { nodes, materials } = useGLTF('/door_model.glb');
+
+  /* ===============================
+     BASE MODEL DIMENSIONS (GLB SIZE)
+  =============================== */
+  const BASE_WIDTH = 900;
+  const BASE_HEIGHT = 2100;
+
+  /* ===============================
+     GLOBAL STORE VALUES
+  =============================== */
+  const verglasung = useDoorStore((s) => s.door.verglasung);
+  const doorWidth = useDoorStore((s) => s.door.width);
+  const doorHeight = useDoorStore((s) => s.door.height);
+  const schloss = useDoorStore((s) => s.door.schloss);
+  const doorType = useDoorStore((s) => s.door.doorType);
+  const anschlag = useDoorStore((s) => s.door.anschlag);
+
   const door_collection_ref = useRef();
   const frame_collection_ref = useRef();
   const lock_collection_front_ref = useRef();
@@ -32,23 +50,24 @@ export function Model(props) {
         <mesh geometry={nodes.bc_2_tlg_bander_top.geometry} material={nodes.bc_2_tlg_bander_top.material} />
         <mesh geometry={nodes.bc_2_tlg_bander_bottom.geometry} material={nodes.bc_2_tlg_bander_bottom.material} />
       </group>
-      <group ref={lock_collection_front_ref} dispose={null}></group>
-      <group ref={lock_collection_back_ref} dispose={null}></group>
-
-      <mesh geometry={nodes.lcf_front_full_lock_frame.geometry} material={nodes.lcf_front_full_lock_frame.material} />
-      <mesh geometry={nodes.lcf_front_pzw_lock.geometry} material={nodes.lcf_front_pzw_lock.material} />
-      <mesh geometry={nodes.lcf_front_handle.geometry} material={nodes.lcf_front_handle.material} />
-      <mesh geometry={nodes.lcf_front_wc_lock.geometry} material={nodes.lcf_front_wc_lock.material} />
-      <mesh geometry={nodes.lcf_front_bb_lock.geometry} material={nodes.lcf_front_bb_lock.material} />
-      <mesh geometry={nodes.lcf_front_half_lock_frame_top.geometry} material={nodes.lcf_front_half_lock_frame_top.material} />
-      <mesh geometry={nodes.lcf_front_half_lock_frame_bottom.geometry} material={nodes.lcf_front_half_lock_frame_bottom.material} />
-      <mesh geometry={nodes.lcb_back_lcb_full_lock_frame_back.geometry} material={nodes.lcb_back_lcb_full_lock_frame_back.material} />
-      <mesh geometry={nodes.lcb_back_pzw_lock_back.geometry} material={nodes.lcb_back_pzw_lock_back.material} />
-      <mesh geometry={nodes.lcb_back_handle_back.geometry} material={nodes.lcb_back_handle_back.material} />
-      <mesh geometry={nodes.lcb_back_wc_lock_back.geometry} material={nodes.lcb_back_wc_lock_back.material} />
-      <mesh geometry={nodes.lcb_back_bb_lock_back.geometry} material={nodes.lcb_back_bb_lock_back.material} />
-      <mesh geometry={nodes.lcb_back_half_lock_frame_top.geometry} material={nodes.lcb_back_half_lock_frame_top.material} />
-      <mesh geometry={nodes.lcb_back_half_lock_frame_bottom.geometry} material={nodes.lcb_back_half_lock_frame_bottom.material} />
+      <group ref={lock_collection_front_ref} dispose={null}>
+        <mesh geometry={nodes.lcf_front_full_lock_frame.geometry} material={nodes.lcf_front_full_lock_frame.material} />
+        <mesh geometry={nodes.lcf_front_pzw_lock.geometry} material={nodes.lcf_front_pzw_lock.material} />
+        <mesh geometry={nodes.lcf_front_handle.geometry} material={nodes.lcf_front_handle.material} />
+        <mesh geometry={nodes.lcf_front_wc_lock.geometry} material={nodes.lcf_front_wc_lock.material} />
+        <mesh geometry={nodes.lcf_front_bb_lock.geometry} material={nodes.lcf_front_bb_lock.material} />
+        <mesh geometry={nodes.lcf_front_half_lock_frame_top.geometry} material={nodes.lcf_front_half_lock_frame_top.material} />
+        <mesh geometry={nodes.lcf_front_half_lock_frame_bottom.geometry} material={nodes.lcf_front_half_lock_frame_bottom.material} />
+      </group>
+      <group ref={lock_collection_back_ref} dispose={null}>
+        <mesh geometry={nodes.lcb_back_lcb_full_lock_frame_back.geometry} material={nodes.lcb_back_lcb_full_lock_frame_back.material} />
+        <mesh geometry={nodes.lcb_back_pzw_lock_back.geometry} material={nodes.lcb_back_pzw_lock_back.material} />
+        <mesh geometry={nodes.lcb_back_handle_back.geometry} material={nodes.lcb_back_handle_back.material} />
+        <mesh geometry={nodes.lcb_back_wc_lock_back.geometry} material={nodes.lcb_back_wc_lock_back.material} />
+        <mesh geometry={nodes.lcb_back_bb_lock_back.geometry} material={nodes.lcb_back_bb_lock_back.material} />
+        <mesh geometry={nodes.lcb_back_half_lock_frame_top.geometry} material={nodes.lcb_back_half_lock_frame_top.material} />
+        <mesh geometry={nodes.lcb_back_half_lock_frame_bottom.geometry} material={nodes.lcb_back_half_lock_frame_bottom.material} />
+      </group>
     </group>
   );
 }

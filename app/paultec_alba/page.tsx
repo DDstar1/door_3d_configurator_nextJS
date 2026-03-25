@@ -113,7 +113,6 @@ function DoorConfiguratorPage() {
               {viewMode === "3d" && <AlbaCanva />}
             </div>
           </div>
-
           {/* Thumbnail Strip — sits directly below the viewer */}
           <div className="flex gap-2 flex-wrap">
             {galleryImages.map((img, i) => (
