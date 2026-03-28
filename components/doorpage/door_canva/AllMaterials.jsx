@@ -1,18 +1,21 @@
-import * as THREE from "three";
-import { useTexture } from "@react-three/drei";
-import { useLoader } from "@react-three/fiber";
-import { useMemo } from "react";
+import * as THREE from 'three';
+import { useTexture } from '@react-three/drei';
+import { useLoader } from '@react-three/fiber';
+import { useMemo } from 'react';
+import DOOR_VALUES from '@/utils/door_config';
 
 /* =========================
    GLASS MATERIAL HOOK
 ========================= */
 export function useGlassMaterial(verglasung) {
   // ✅ Always load texture (safe)
-  const chinchillaTexture = useTexture("/textures/glass/chinchilla.png");
+  const chinchillaTexture = useTexture('/textures/glass/chinchilla.png');
+
+  const { VERGLASUNG_OPTIONS, LOCK_OPTIONS } = DOOR_VALUES;
 
   return useMemo(() => {
     switch (verglasung) {
-      case "Klar Glas":
+      case VERGLASUNG_OPTIONS.KLAR_GLAS:
         return new THREE.MeshPhysicalMaterial({
           color: 0xffffff,
           transparent: true,
@@ -21,7 +24,7 @@ export function useGlassMaterial(verglasung) {
           metalness: 0,
           clearcoat: 1,
         });
-      case "Satinato Weiß":
+      case VERGLASUNG_OPTIONS.SATINATO_WEISS:
         return new THREE.MeshPhysicalMaterial({
           color: 0xffffff,
           transparent: true,
@@ -29,7 +32,7 @@ export function useGlassMaterial(verglasung) {
           roughness: 0.6,
           metalness: 0,
         });
-      case "Mastercarrè Klar":
+      case VERGLASUNG_OPTIONS.MASTERCARRE_KLAR:
         return new THREE.MeshPhysicalMaterial({
           color: 0xffffff,
           transparent: true,
@@ -37,7 +40,7 @@ export function useGlassMaterial(verglasung) {
           roughness: 0.2,
           metalness: 0,
         });
-      case "Chinchilla Weiß":
+      case VERGLASUNG_OPTIONS.CHINCHILLA_WEISS:
         return new THREE.MeshPhysicalMaterial({
           map: chinchillaTexture, // your Chinchilla pattern
           transparent: true, // allows see-through
@@ -48,7 +51,7 @@ export function useGlassMaterial(verglasung) {
           side: THREE.DoubleSide, // ensures it renders from both sides
         });
       default:
-        return new THREE.MeshStandardMaterial({ visible: false }); // hide if "Ohne"
+        return null; // hide if "Ohne"
     }
   }, [verglasung, chinchillaTexture]);
 }
@@ -57,17 +60,11 @@ export function useGlassMaterial(verglasung) {
    HANDLE MATERIAL HOOK
 ========================= */
 export function useMaterial(color) {
-  const silverTextures = useLoader(THREE.TextureLoader, [
-    "/textures/silver/silver_albedo.png",
-    "/textures/silver/silver_metallic.png",
-    "/textures/silver/silver_roughness.png",
-    "/textures/silver/silver_normal-ogl.png",
-    "/textures/silver/silver_ao.png",
-  ]);
+  const silverTextures = useLoader(THREE.TextureLoader, ['/textures/silver/silver_albedo.png', '/textures/silver/silver_metallic.png', '/textures/silver/silver_roughness.png', '/textures/silver/silver_normal-ogl.png', '/textures/silver/silver_ao.png']);
 
   return useMemo(() => {
     switch (color) {
-      case "Silberfarbig": {
+      case 'silberfarbig': {
         const [albedo, metallic, roughness, normal, ao] = silverTextures;
 
         return new THREE.MeshPhysicalMaterial({
@@ -83,7 +80,7 @@ export function useMaterial(color) {
         });
       }
 
-      case "Edelstahl":
+      case 'edelstahl':
         return new THREE.MeshPhysicalMaterial({
           color: 0xdddddd,
           metalness: 1,
@@ -92,7 +89,7 @@ export function useMaterial(color) {
           clearcoatRoughness: 0.2,
         });
 
-      case "Matt Schwarz":
+      case 'matt schwarz':
         return new THREE.MeshPhysicalMaterial({
           color: 0x111111,
           metalness: 0,
@@ -100,13 +97,17 @@ export function useMaterial(color) {
           clearcoat: 0,
         });
 
-      default:
+      case 'vernickelt':
         return new THREE.MeshPhysicalMaterial({
-          color: "black",
-          metalness: 0,
-          roughness: 0.8,
-          clearcoat: 0,
+          color: 0xc8c8c8, // cool light grey — nickel tone
+          metalness: 0.9,
+          roughness: 0.3,
+          clearcoat: 0.8,
+          clearcoatRoughness: 0.1,
         });
+
+      default:
+        return null;
     }
   }, [color, silverTextures]);
 }

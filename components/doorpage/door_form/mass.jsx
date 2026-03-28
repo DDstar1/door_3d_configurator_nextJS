@@ -24,12 +24,12 @@ export default function MassTab() {
           type="number"
           value={tempWidth}
           min={600}
-          max={1200}
+          max={1800}
           onChange={(e) => setTempWidth(e.target.value)}
           onBlur={() =>
             setDoorField(
               "width",
-              Math.min(1200, Math.max(600, Number(tempWidth))),
+              Math.min(1800, Math.max(600, Number(tempWidth))),
             )
           }
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"

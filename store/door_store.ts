@@ -1,51 +1,59 @@
 import { create } from "zustand";
-import DoorState from "@/utils/my_types";
+import { DoorState } from "@/utils/my_types";
 
-const initialDoorState: DoorState = {
+import DOOR_VALUES from "@/utils/door_config";
+
+type DoorStore = {
+  door: DoorState;
+  setDoorField: <K extends keyof DoorState>(
+    field: K,
+    value: DoorState[K],
+  ) => void;
+  setDoor: (door: DoorState) => void;
+  resetDoor: () => void;
+};
+
+const initialDoorState = {
   lueftung: "Ohne Kernlochbohrung",
   dichtung: "Standard (Zargendichtung)",
-  boden: "Ohne Bodendichtung",
+  boden: DOOR_VALUES.BODENDICHTUNG.OHNE_BODENDICHTUNG,
   lichtoeffnung: "Norm-LÖ 1011 V003",
 
-  verglasung: "Chinchilla Weiß",
-  doorType: "Stumpf",
-  anschlag: "DIN links",
+  verglasung: DOOR_VALUES.VERGLASUNG_OPTIONS.CHINCHILLA_WEISS,
+  doorType: DOOR_VALUES.TURTYP_OPTION.Stumpf,
+  anschlag: DOOR_VALUES.ANSCHLAG_TYPES.DIN_LEFT,
 
   width: 900,
   height: 2100,
 
-  schloss: "Ohne",
-  band: "Einbohrband 3-tlg. matt schwarz, RAL 9005",
-  schliessblech: "Nr. 418 – Edelstahl",
+  schloss: DOOR_VALUES.LOCK_OPTIONS.BB_EDELSTAHL,
+  band: DOOR_VALUES.BAND_OPTIONS.EINBOHRBAND_3TLG_MATT_SCHWARZ,
+  schliessblech: DOOR_VALUES.SCHLIESSBLECHE_OPTIONS.NR_418_EDELSTAHL,
 
-  zarge: "ohne Zarge",
+  zarge: DOOR_VALUES.ZARGEN_OPTIONS.OHNE_ZARGEN,
   bekleidung: "62,5 mm",
   wandstaerke: "80 mm (77 - 97 mm)",
-
-  glassType: "Klar",
-  handle: "Ohne",
-  handleColor: "Matt Schwarz",
 };
 
-export const useDoorStore = create((set) => ({
+export const useDoorStore = create<DoorStore>((set) => ({
   door: initialDoorState,
 
-  // Update one field
   setDoorField: (field, value) =>
-    set((state) => ({
-      door: {
-        ...state.door,
-        [field]: value,
-      },
-    })),
+    set((state) => {
+      console.log("Updating door field:", field, "=>", value);
 
-  // Replace entire door object
+      return {
+        door: {
+          ...state.door,
+          [field]: value,
+        },
+      };
+    }),
   setDoor: (newDoor) =>
     set(() => ({
       door: newDoor,
     })),
 
-  // Reset
   resetDoor: () =>
     set(() => ({
       door: initialDoorState,

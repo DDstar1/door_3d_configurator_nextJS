@@ -1,4 +1,5 @@
 import { useDoorStore } from "@/store/door_store";
+import DOOR_VALUES from "@/utils/door_config";
 
 export default function ExtrasTab() {
   const lueftung = useDoorStore((s) => s.door.lueftung);
@@ -7,6 +8,8 @@ export default function ExtrasTab() {
   const lichtoeffnung = useDoorStore((s) => s.door.lichtoeffnung);
   const verglasung = useDoorStore((s) => s.door.verglasung);
   const setDoorField = useDoorStore((s) => s.setDoorField);
+
+  const { BODENDICHTUNG, VERGLASUNG_OPTIONS } = DOOR_VALUES;
 
   return (
     <div className="space-y-4">
@@ -37,8 +40,12 @@ export default function ExtrasTab() {
           onChange={(e) => setDoorField("boden", e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
-          <option value="Ohne Bodendichtung">Ohne Bodendichtung</option>
-          <option value="Mit Bodendichtung">Mit Bodendichtung</option>
+          <option value={BODENDICHTUNG.OHNE_BODENDICHTUNG}>
+            Ohne Bodendichtung
+          </option>
+          <option value={BODENDICHTUNG.MIT_BODENDICHTUNG}>
+            Mit Bodendichtung
+          </option>
         </select>
       </div>
 
@@ -64,11 +71,19 @@ export default function ExtrasTab() {
           onChange={(e) => setDoorField("verglasung", e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
-          <option value="Ohne Verglasung">Ohne Verglasung</option>
-          <option value="Klar Glas">Klar Glas</option>
-          <option value="Satinato Weiß">Satinato Weiß</option>
-          <option value="Mastercarrè Klar">Mastercarrè Klar</option>
-          <option value="Chinchilla Weiß">Chinchilla Weiß</option>
+          <option value={VERGLASUNG_OPTIONS.OHNE_VERGLASUNG}>
+            Ohne Verglasung
+          </option>
+          <option value={VERGLASUNG_OPTIONS.KLAR_GLAS}>Klar Glas</option>
+          <option value={VERGLASUNG_OPTIONS.SATINATO_WEISS}>
+            Satinato Weiß
+          </option>
+          <option value={VERGLASUNG_OPTIONS.MASTERCARRE_KLAR}>
+            Mastercarrè Klar
+          </option>
+          <option value={VERGLASUNG_OPTIONS.CHINCHILLA_WEISS}>
+            Chinchilla Weiß
+          </option>
         </select>
       </div>
     </div>

@@ -1,12 +1,15 @@
 "use client";
 
 import { useDoorStore } from "@/store/door_store";
+import DOOR_VALUES from "@/utils/door_config";
 
 export default function ZargenTab() {
   const zarge = useDoorStore((s) => s.door.zarge);
   const bekleidung = useDoorStore((s) => s.door.bekleidung);
   const wandstaerke = useDoorStore((s) => s.door.wandstaerke);
   const setDoorField = useDoorStore((s) => s.setDoorField);
+
+  const { ZARGEN_OPTIONS } = DOOR_VALUES;
 
   const wandOptions = [
     "80 mm (77 - 97 mm)",
@@ -27,13 +30,13 @@ export default function ZargenTab() {
           onChange={(e) => setDoorField("zarge", e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
-          <option value="ohne Zarge">ohne Zarge</option>
-          <option value="mit Zarge">mit Zarge</option>
+          <option value={ZARGEN_OPTIONS.OHNE_ZARGEN}>ohne Zarge</option>
+          <option value={ZARGEN_OPTIONS.MIT_ZARGEN}>mit Zarge</option>
         </select>
       </div>
 
       {/* Conditional fields */}
-      {zarge === "mit Zarge" && (
+      {ZARGEN_OPTIONS.MIT_ZARGEN === zarge && (
         <>
           {/* Bekleidung */}
           <div>

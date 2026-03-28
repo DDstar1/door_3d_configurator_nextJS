@@ -1,10 +1,13 @@
 import { useDoorStore } from "@/store/door_store";
+import DOOR_VALUES from "@/utils/door_config";
 
 export default function TypTab() {
   const doorType = useDoorStore((s) => s.door.doorType);
   const insertType = useDoorStore((s) => s.door.insertType);
   const anschlag = useDoorStore((s) => s.door.anschlag);
   const setDoorField = useDoorStore((s) => s.setDoorField);
+
+  const { TURTYP_OPTION, ANSCHLAG_TYPES } = DOOR_VALUES;
 
   return (
     <div className="space-y-3">
@@ -16,8 +19,8 @@ export default function TypTab() {
           onChange={(e) => setDoorField("doorType", e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
-          <option value="Stumpf">Stumpf</option>
-          <option value="Gefalzt">Gefalzt</option>
+          <option value={TURTYP_OPTION.Gefalzt}>Stumpf</option>
+          <option value={TURTYP_OPTION.Stumpf}>Gefalzt</option>
         </select>
       </div>
 
@@ -42,8 +45,8 @@ export default function TypTab() {
           onChange={(e) => setDoorField("anschlag", e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
-          <option value="DIN rechts">DIN rechts</option>
-          <option value="DIN links">DIN links</option>
+          <option value={ANSCHLAG_TYPES.DIN_RIGHT}>DIN rechts</option>
+          <option value={ANSCHLAG_TYPES.DIN_LEFT}>DIN links</option>
         </select>
       </div>
     </div>
