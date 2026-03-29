@@ -45,7 +45,7 @@ export default function AlbaCanva() {
   return (
     <div className="flex flex-col w-full h-screen">
       {/* Controls bar */}
-      <div className="flex items-center gap-3 px-4 py-2.5 mt-8 bg-neutral-900 shrink-0 flex-wrap border-b border-neutral-700">
+      <div className="hidden items-center gap-3 px-4 py-2.5 mt-8 bg-neutral-900 shrink-0 flex-wrap border-b border-neutral-700">
         <span className="text-neutral-400 text-xs font-medium tracking-wide uppercase mr-1">Position</span>
 
         {['x', 'y', 'z'].map((axis) => (
