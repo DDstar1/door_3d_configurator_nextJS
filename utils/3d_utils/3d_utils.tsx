@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-export const getHardwareColour = (hardware) => {
+export const getHardwareColour = (hardware: any) => {
   if (!hardware) return null;
 
   if (hardware.includes("edelstahl")) return "edelstahl";
@@ -15,7 +15,10 @@ export const getHardwareColour = (hardware) => {
    BOUNDING BOX METRICS
 =============================== */
 
-export const getMetrics = (ref, options: any = {}) => {
+export const getMetrics = (
+  ref: React.RefObject<THREE.Object3D>,
+  options: any = {},
+) => {
   const { addBoundingBox = false, color = 0xff0000 } = options;
 
   if (!ref?.current) return null;

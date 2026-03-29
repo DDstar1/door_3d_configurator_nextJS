@@ -108,25 +108,28 @@ export function Model(props) {
 
   useEffect(() => {
     const door_metrics = getMetrics(door_collection_ref, {
-      addBoundingBox: true,
+      addBoundingBox: false,
       color: 0xff0000,
     });
 
     console.log('Door metrics: ', door_metrics);
 
     let band_pos_x = 0;
+    let lock_collection_pos_x = 0;
 
     if (mirrorX == 1) {
       band_pos_x = door_metrics.maxX - door_metrics.maxX / doorScaleX;
+      lock_collection_pos_x = door_metrics.minX - door_metrics.minX / doorScaleX;
     } else {
-      // band_pos_x = door_metrics.minX - Math.abs(door_metrics.minX / doorScaleX);
-      band_pos_x = door_metrics.maxX - door_metrics.maxX / doorScaleX;
-      band_pos_x -= door_metrics.centerX;
+      band_pos_x = door_metrics.minX / doorScaleX - door_metrics.minX;
+      lock_collection_pos_x = door_metrics.maxX / doorScaleX - door_metrics.maxX;
     }
     bander_collection_ref.current.position.x = band_pos_x;
+    lock_collection_front_ref.current.position.x = lock_collection_pos_x;
+    lock_collection_back_ref.current.position.x = lock_collection_pos_x;
   }, [doorWidth, doorHeight, anschlag]); // ✅ re-runs when anschlag changes
 
-  useHelper(bander_collection_ref, THREE.BoxHelper, 'green');
+  // useHelper(bander_collection_ref, THREE.BoxHelper, 'green');
 
   return (
     <group {...props} scale={[mirrorX, 1, 1]} dispose={null}>

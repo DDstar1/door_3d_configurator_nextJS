@@ -80,7 +80,9 @@ export default function AlbaCanva() {
         <gridHelper args={[40, 20, 'red', 0x55ccff]} />
         <OrbitControls target={[0, 1, 0]} enablePan={true} />
         <directionalLight intensity={2} position={[2, 5, 1]} />
-        <Suspense fallback={null}>{/* <Environment preset="city" /> */}</Suspense>
+        <Suspense fallback={null}>
+          <Environment preset="city" />{' '}
+        </Suspense>
         <Model />
         {markers.map((pos, i) => (
           <YellowCross key={i} position={pos} />
