@@ -15,7 +15,6 @@ import * as THREE from 'three';
 
 export function Model(props) {
   const { nodes, materials } = useGLTF('/models/door_model.glb');
-  const [BASE_BAND_WORLD_X_POS, set_BASE_BAND_WORLD_X] = useState();
 
   /* ===============================
      GLOBAL STORE VALUES
@@ -90,6 +89,7 @@ export function Model(props) {
     zargen: zargen !== DOOR_VALUES.ZARGEN_OPTIONS.OHNE_ZARGEN,
     schloss: schloss !== DOOR_VALUES.LOCK_OPTIONS.OHNE,
     boden: boden !== DOOR_VALUES.BODENDICHTUNG.OHNE_BODENDICHTUNG,
+    rebateEdge: doorType !== DOOR_VALUES.TURTYP_OPTION.Gefalzt,
 
     isBB: schloss.includes('BB'),
     isWC: schloss.includes('WC'),
@@ -137,7 +137,7 @@ export function Model(props) {
       <group ref={door_collection_ref} scale={[doorScaleX, doorScaleY, 1]} dispose={null}>
         <mesh geometry={nodes.dc_door.geometry} material={mat.door} />
         <mesh geometry={nodes.dc_glass.geometry} material={mat.glass} />
-        <mesh ref={rebate_edge_ref} geometry={nodes.dc_rebate_edge.geometry} material={mat.rebateEdge} />
+        <mesh ref={rebate_edge_ref} geometry={nodes.dc_rebate_edge.geometry} visible={visibility.rebateEdge} material={mat.rebateEdge} />
         <mesh geometry={nodes.dc_bodendictung_fill.geometry} visible={visibility.boden == false} material={mat.bodendichtungFill} />
         <mesh geometry={nodes.dc_bodendictung_construct_1.geometry} visible={visibility.boden} material={mat.bodendichtungConstruct1} />
         <mesh geometry={nodes.dc_bodendictung_construct_2.geometry} visible={visibility.boden} material={mat.bodendichtungConstruct2} />

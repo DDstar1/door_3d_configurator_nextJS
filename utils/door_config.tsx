@@ -38,6 +38,15 @@ const DOOR_VALUES = {
     EINBOHRBAND_3TLG_EDELSTAHL: "einbohrband 3-tlg. edelstahl",
     VX_160_F_VERNICKELT: "vx 160 f vernickelt (max. 160 kg türgewicht)",
     VX_160_F_EDELSTAHL: "vx 160 f edelstahl (max. 160 kg türgewicht)",
+
+    // NEW (only for Stumpf)
+    PIVOTA_DX_38_3D_VERNICKELT:
+      'Pivota DX "N" 38 3D, velour vernickelt (Standard)',
+    PIVOTA_DX_38_3D_MATT_SCHWARZ:
+      'Pivota DX 38 "N" 3-D, Design, matt schwarz, RAL 9005',
+    PIVOTA_DX_62_3D_VERNICKELT: "Pivota DX 62 3-D, Design, velour vernickelt",
+    PIVOTA_DX_62_3D_MATT_SCHWARZ:
+      "Pivota DX 62 3-D, Design, matt schwarz, RAL 9005",
   },
 
   SCHLIESSBLECHE_OPTIONS: {

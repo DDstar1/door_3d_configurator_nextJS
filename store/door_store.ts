@@ -20,7 +20,7 @@ const initialDoorState = {
   lichtoeffnung: "Norm-LÖ 1011 V003",
 
   verglasung: DOOR_VALUES.VERGLASUNG_OPTIONS.CHINCHILLA_WEISS,
-  doorType: DOOR_VALUES.TURTYP_OPTION.Stumpf,
+  doorType: DOOR_VALUES.TURTYP_OPTION.Gefalzt,
   anschlag: DOOR_VALUES.ANSCHLAG_TYPES.DIN_LEFT,
 
   width: 900,
