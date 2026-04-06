@@ -14,7 +14,7 @@ type DoorStore = {
 };
 
 const initialDoorState = {
-  lueftung: "Ohne Kernlochbohrung",
+  lueftung: DOOR_VALUES.LUEFTUNGSBOHRUNG.OHNE_KERNLOCHBOHRUNG,
   dichtung: "Standard (Zargendichtung)",
   boden: DOOR_VALUES.BODENDICHTUNG.OHNE_BODENDICHTUNG,
   lichtoeffnung: "Norm-LÖ 1011 V003",

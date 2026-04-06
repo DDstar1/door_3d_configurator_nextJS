@@ -28,6 +28,7 @@ export function Model(props) {
   const zargen = useDoorStore((s) => s.door.zarge);
   const band = useDoorStore((s) => s.door.band);
   const boden = useDoorStore((s) => s.door.boden);
+  const vent = useDoorStore((s) => s.door.lueftung);
 
   const door_collection_ref = useRef();
   const frame_collection_ref = useRef();
@@ -68,6 +69,8 @@ export function Model(props) {
     zargen: nodes.fc_zargen.material,
     banderTop: BandMat ?? nodes.bc_2_tlg_bander_top.material,
     banderBottom: BandMat ?? nodes.bc_2_tlg_bander_bottom.material,
+    banderPivotTop: BandMat ?? nodes.bc_pivot_bander_top_top_1st_half.material,
+    banderPivotBottom: BandMat ?? nodes.bc_pivot_bander_top_top_1st_half.material,
     frontFullLockFrame: hardwareMat ?? nodes.lcf_front_full_lock_frame.material,
     frontPzwLock: hardwareMat ?? nodes.lcf_front_pzw_lock.material,
     frontWcLock: hardwareMat ?? nodes.lcf_front_wc_lock.material,
@@ -89,7 +92,13 @@ export function Model(props) {
     zargen: zargen !== DOOR_VALUES.ZARGEN_OPTIONS.OHNE_ZARGEN,
     schloss: schloss !== DOOR_VALUES.LOCK_OPTIONS.OHNE,
     boden: boden !== DOOR_VALUES.BODENDICHTUNG.OHNE_BODENDICHTUNG,
-    rebateEdge: doorType !== DOOR_VALUES.TURTYP_OPTION.Gefalzt,
+    rebateEdge: doorType === DOOR_VALUES.TURTYP_OPTION.Gefalzt,
+    glass: verglasung !== DOOR_VALUES.VERGLASUNG_OPTIONS.OHNE_VERGLASUNG,
+    topVent: vent === DOOR_VALUES.LUEFTUNGSBOHRUNG.UNTEN || vent === DOOR_VALUES.LUEFTUNGSBOHRUNG.UNTEN_UND_OBEN,
+    bottomVent: vent === DOOR_VALUES.LUEFTUNGSBOHRUNG.OBEN || vent === DOOR_VALUES.LUEFTUNGSBOHRUNG.UNTEN_UND_OBEN,
+
+    isbander2tlg: doorType === DOOR_VALUES.TURTYP_OPTION.Gefalzt,
+    isbanderPivot: doorType === DOOR_VALUES.TURTYP_OPTION.Stumpf,
 
     isBB: schloss.includes('BB'),
     isWC: schloss.includes('WC'),
@@ -129,19 +138,28 @@ export function Model(props) {
     lock_collection_back_ref.current.position.x = lock_collection_pos_x;
   }, [doorWidth, doorHeight, anschlag]); // ✅ re-runs when anschlag changes
 
-  // useHelper(bander_collection_ref, THREE.BoxHelper, 'green');
+  /* ===============================
+     FRAME POSITION — recalculate 
+  =============================== */
+  useEffect(() => {
+    if (!frame_collection_ref.current) return;
+
+    frame_collection_ref.current.position.z = doorType === DOOR_VALUES.TURTYP_OPTION.Gefalzt ? 0 : 0.01;
+  }, [doorType]);
 
   return (
     <group {...props} scale={[mirrorX, 1, 1]} dispose={null}>
       {/* ── Door leaf ── */}
       <group ref={door_collection_ref} scale={[doorScaleX, doorScaleY, 1]} dispose={null}>
         <mesh geometry={nodes.dc_door.geometry} material={mat.door} />
-        <mesh geometry={nodes.dc_glass.geometry} material={mat.glass} />
+        <mesh geometry={nodes.dc_glass.geometry} visible={visibility.glass} material={mat.glass} />
         <mesh ref={rebate_edge_ref} geometry={nodes.dc_rebate_edge.geometry} visible={visibility.rebateEdge} material={mat.rebateEdge} />
         <mesh geometry={nodes.dc_bodendictung_fill.geometry} visible={visibility.boden == false} material={mat.bodendichtungFill} />
         <mesh geometry={nodes.dc_bodendictung_construct_1.geometry} visible={visibility.boden} material={mat.bodendichtungConstruct1} />
         <mesh geometry={nodes.dc_bodendictung_construct_2.geometry} visible={visibility.boden} material={mat.bodendichtungConstruct2} />
         <mesh geometry={nodes.dc_bodendictung_construct_3.geometry} visible={visibility.boden} material={mat.bodendichtungConstruct3} />
+        <mesh geometry={nodes.dc_vent_top.geometry} visible={visibility.topVent} material={nodes.dc_vent_top.material} />
+        <mesh geometry={nodes.dc_vent_bottom.geometry} visible={visibility.bottomVent} material={nodes.dc_vent_bottom.material} />
       </group>
 
       {/* ── Frame / Zarge ── */}
@@ -151,8 +169,12 @@ export function Model(props) {
 
       {/* ── Hinges / Bänder ── */}
       <group ref={bander_collection_ref} dispose={null}>
-        <mesh geometry={nodes.bc_2_tlg_bander_top.geometry} material={mat.banderTop} />
-        <mesh geometry={nodes.bc_2_tlg_bander_bottom.geometry} material={mat.banderBottom} />
+        <mesh geometry={nodes.bc_2_tlg_bander_top.geometry} visible={visibility.isbander2tlg} material={mat.banderTop} />
+        <mesh geometry={nodes.bc_2_tlg_bander_bottom.geometry} visible={visibility.isbander2tlg} material={mat.banderBottom} />
+        <mesh geometry={nodes.bc_pivot_bander_top_top_2nd_half.geometry} visible={visibility.isbanderPivot} material={mat.banderTop} />
+        <mesh geometry={nodes.bc_pivot_bander_top_top_1st_half.geometry} visible={visibility.isbanderPivot} material={mat.banderTop} />
+        <mesh geometry={nodes.bc_pivot_bander_bottom_top_2nd_half.geometry} visible={visibility.isbanderPivot} material={mat.banderBottom} />
+        <mesh geometry={nodes.bc_pivot_bander_bottom_1st_half.geometry} visible={visibility.isbanderPivot} material={mat.banderBottom} />
       </group>
 
       {/* ── Lock — front face ── */}

@@ -61,6 +61,12 @@ const DOOR_VALUES = {
     MASTERCARRE_KLAR: "mastercarrè klar",
     CHINCHILLA_WEISS: "chinchilla weiß",
   },
+  LUEFTUNGSBOHRUNG: {
+    OHNE_KERNLOCHBOHRUNG: "Ohne Kernlochbohrung",
+    UNTEN: "Unten",
+    OBEN: "Oben",
+    UNTEN_UND_OBEN: "Unten & Oben",
+  },
 } as const;
 
 export default DOOR_VALUES;

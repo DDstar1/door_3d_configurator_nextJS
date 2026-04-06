@@ -49,7 +49,7 @@ export default function SicherheitTab() {
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
           {/* Only for Stumpf */}
-          {doorType != TURTYP_OPTION.Gefalzt && (
+          {doorType == TURTYP_OPTION.Gefalzt && (
             <>
               {/* Standard options */}
               <option value={BAND_OPTIONS.EINBOHRBAND_2TLG_VERNICKELT}>
@@ -80,7 +80,7 @@ export default function SicherheitTab() {
           )}
 
           {/* Only for Stumpf */}
-          {doorType != TURTYP_OPTION.Stumpf && (
+          {doorType == TURTYP_OPTION.Stumpf && (
             <>
               <option value={BAND_OPTIONS.PIVOTA_DX_38_3D_VERNICKELT}>
                 Pivota DX "N" 38 3D, velour vernickelt (Standard)

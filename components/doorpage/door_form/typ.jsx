@@ -19,8 +19,8 @@ export default function TypTab() {
           onChange={(e) => setDoorField("doorType", e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
-          <option value={TURTYP_OPTION.Gefalzt}>Stumpf</option>
-          <option value={TURTYP_OPTION.Stumpf}>Gefalzt</option>
+          <option value={TURTYP_OPTION.Stumpf}>Stumpf</option>
+          <option value={TURTYP_OPTION.Gefalzt}>Gefalzt</option>
         </select>
       </div>
 

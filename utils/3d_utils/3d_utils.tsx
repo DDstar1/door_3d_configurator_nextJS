@@ -4,9 +4,9 @@ import * as THREE from "three";
 export const getHardwareColour = (hardware: any) => {
   if (!hardware) return null;
 
-  if (hardware.includes("edelstahl")) return "edelstahl";
-  if (hardware.includes("matt schwarz")) return "matt schwarz";
-  if (hardware.includes("vernickelt")) return "vernickelt";
+  if (hardware.toLowerCase().includes("edelstahl")) return "edelstahl";
+  if (hardware.toLowerCase().includes("matt schwarz")) return "matt schwarz";
+  if (hardware.toLowerCase().includes("vernickelt")) return "vernickelt";
 
   return null; // fallback if needed
 };

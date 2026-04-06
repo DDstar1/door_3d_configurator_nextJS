@@ -9,7 +9,7 @@ export default function ExtrasTab() {
   const verglasung = useDoorStore((s) => s.door.verglasung);
   const setDoorField = useDoorStore((s) => s.setDoorField);
 
-  const { BODENDICHTUNG, VERGLASUNG_OPTIONS } = DOOR_VALUES;
+  const { BODENDICHTUNG, VERGLASUNG_OPTIONS, LUEFTUNGSBOHRUNG } = DOOR_VALUES;
 
   return (
     <div className="space-y-4">
@@ -23,10 +23,12 @@ export default function ExtrasTab() {
           onChange={(e) => setDoorField("lueftung", e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
-          <option value="Ohne Kernlochbohrung">Ohne Kernlochbohrung</option>
-          <option value="Unten">Unten</option>
-          <option value="Oben">Oben</option>
-          <option value="Unten & Oben">Unten & Oben</option>
+          <option value={LUEFTUNGSBOHRUNG.OHNE_KERNLOCHBOHRUNG}>
+            Ohne Kernlochbohrung
+          </option>
+          <option value={LUEFTUNGSBOHRUNG.UNTEN}>Unten</option>
+          <option value={LUEFTUNGSBOHRUNG.OBEN}>Oben</option>
+          <option value={LUEFTUNGSBOHRUNG.UNTEN_UND_OBEN}>Unten & Oben</option>
         </select>
       </div>
 
