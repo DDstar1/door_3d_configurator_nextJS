@@ -115,7 +115,7 @@ export function GroupWithMaterial({ material, children, ...props }: any) {
 /* =========================
    GLASS MATERIAL HOOK
 ========================= */
-export function useGlassMaterial(verglasung) {
+export function useGlassMaterial(verglasung: any) {
   // ✅ Always load texture (safe)
   const chinchillaTexture = useTexture("/textures/glass/chinchilla.png");
 
@@ -167,7 +167,7 @@ export function useGlassMaterial(verglasung) {
 /* =========================
    HANDLE MATERIAL HOOK
 ========================= */
-export function useMaterial(color) {
+export function useMaterial(color: string) {
   const silverTextures = useLoader(THREE.TextureLoader, [
     "/textures/silver/silver_albedo.png",
     "/textures/silver/silver_metallic.png",
