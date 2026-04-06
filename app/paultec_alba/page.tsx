@@ -19,7 +19,8 @@ import { IconType } from "react-icons";
 import { BsBox } from "react-icons/bs";
 import { BsImage } from "react-icons/bs";
 import Image from "next/image";
-import AlbaCanva from "@/components/doorpage/door_canva/CanvaScene";
+import AlbaCanva from "./embed_alba_iframe/page";
+import Link from "next/link";
 
 // 👉 OPTIONAL (for later when you switch to 3D)
 // import CanvasScene from "@/components/doorpage/door_canva/CanvasScene";
@@ -83,6 +84,13 @@ function DoorConfiguratorPage() {
                 <BsBox size={14} />
                 3D
               </button>
+              <Link
+                href="/paultec_alba/embed_alba_iframe"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors bg-white text-gray-600 hover:bg-gray-100"
+              >
+                <BsBox size={14} />
+                Iframe
+              </Link>
             </div>
 
             {/* Wishlist Button — Top Right */}
