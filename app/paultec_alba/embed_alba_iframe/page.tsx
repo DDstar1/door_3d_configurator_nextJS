@@ -10,6 +10,7 @@ import { useEffect, useRef, Suspense } from "react";
 import { Model } from "./Alba_model";
 import { useDoorStore } from "@/store/door_store";
 import { mapDoorOptions } from "@/utils/3d_utils/3d_AI_mapDoorOptions";
+import { DoorConfigurationForm2 } from "@/components/doorpage/door_form/Total_door_form";
 
 export default function AlbaCanva() {
   const setDoorField = useDoorStore((state) => state.setDoorField);
@@ -65,6 +66,7 @@ export default function AlbaCanva() {
         </Suspense>
         <Model />
       </Canvas>
+      <DoorConfigurationForm2 />
     </div>
   );
 }
