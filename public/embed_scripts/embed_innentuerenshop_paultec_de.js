@@ -200,7 +200,7 @@
         galleryWrapper.classList.add(fullscreenWrapperClass);
 
         // Hide gallery content so iframe is fullscreen
-        galleryWrapper.style.visibility = "hidden";
+        //  galleryWrapper.style.visibility = "hidden";
 
         if (!iframeLoaded) {
           iframeEl.src = IFRAME_3D_URL;
