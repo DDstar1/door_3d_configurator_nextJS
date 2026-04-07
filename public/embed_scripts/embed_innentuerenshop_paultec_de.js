@@ -1,6 +1,5 @@
 (function DoorConfiguratorEmbed() {
   function main() {
-    // ── SELECTORS ────────────────────────────────────────────────────
     const GALLERY_WRAPPER_SELECTOR = ".product-images";
     const OPTIONS_SELECTOR = "#tm-extra-product-options-fields";
     const IFRAME_3D_URL =
@@ -14,7 +13,7 @@
 
     console.log("[DoorConfigurator] script loaded");
 
-    // ── INJECT STYLES ────────────────────────────────────────────────
+    // ── STYLES ──────────────────────────────────────────────────────
     const style = document.createElement("style");
     style.innerHTML = `
       .door-toggle {
@@ -46,21 +45,20 @@
         height: 100%;
       }
 
-    .door-toggle button:hover:not(.active),
-    .door-toggle a:hover:not(.active) {
-      background: #fca5a5;
-    }
+      .door-toggle button:hover:not(.active),
+      .door-toggle a:hover:not(.active) {
+        background: #fca5a5;
+      }
+
       .door-toggle .active {
         background: #7f1d1d;
         color: white;
       }
 
-      /* Hide 2D images when 3D mode is active */
       .door-3d-active .flickity-viewport {
         visibility: hidden;
       }
 
-      /* 3D iframe overlay */
       #door-3d-iframe {
         display: none;
         position: absolute;
@@ -78,10 +76,9 @@
     `;
     document.head.appendChild(style);
 
-    // ── MAKE WRAPPER RELATIVE (needed for absolute iframe overlay) ───
     galleryWrapper.style.position = "relative";
 
-    // ── CREATE TOGGLE UI ─────────────────────────────────────────────
+    // ── UI ──────────────────────────────────────────────────────────
     const toggle = document.createElement("div");
     toggle.className = "door-toggle";
     toggle.innerHTML = `
@@ -91,19 +88,28 @@
     `;
     galleryWrapper.appendChild(toggle);
 
-    // ── CREATE IFRAME (lazy — injected once, shown/hidden by CSS) ────
     const iframeEl = document.createElement("iframe");
     iframeEl.id = "door-3d-iframe";
     iframeEl.setAttribute("allowfullscreen", "true");
     galleryWrapper.appendChild(iframeEl);
 
-    // ── STATE ────────────────────────────────────────────────────────
+    // ── STATE ───────────────────────────────────────────────────────
     let viewMode = "2d";
     let iframeLoaded = false;
-    let lastOptions = null; // FIX: declared before first use in sendOptions
-    let debounceTimer = null; // FIX: replaces broken hasRun flag
+    let iframeReady = false; // 🔥 NEW
+    let lastOptions = null;
+    let debounceTimer = null;
 
-    // ── UI UPDATE ────────────────────────────────────────────────────
+    // ── LISTEN FOR IFRAME READY ─────────────────────────────────────
+    window.addEventListener("message", (event) => {
+      if (event.data?.type === "IFRAME_READY") {
+        console.log("[DoorConfigurator] iframe ready");
+        iframeReady = true;
+        sendOptions("iframe ready handshake");
+      }
+    });
+
+    // ── UI UPDATE ───────────────────────────────────────────────────
     function updateUI() {
       toggle.querySelectorAll("button").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.mode === viewMode);
@@ -112,23 +118,19 @@
       if (viewMode === "3d") {
         galleryWrapper.classList.add("door-3d-active");
 
-        // Lazy-load the iframe src the first time 3D is activated
         if (!iframeLoaded) {
           iframeEl.src = IFRAME_3D_URL;
           iframeLoaded = true;
-          // Send the latest cached options once iframe finishes loading
-          iframeEl.addEventListener(
-            "load",
-            () => sendOptions("iframe loaded"),
-            { once: true },
-          );
+        } else if (iframeReady) {
+          // Already ready → send immediately
+          debouncedSend("3D reopen");
         }
       } else {
         galleryWrapper.classList.remove("door-3d-active");
       }
     }
 
-    // ── TOGGLE CLICK ─────────────────────────────────────────────────
+    // ── TOGGLE CLICK ────────────────────────────────────────────────
     toggle.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
@@ -138,7 +140,6 @@
 
       console.log("[DoorConfigurator] viewMode:", viewMode);
 
-      // Notify the 3D iframe of the mode change
       if (iframeLoaded && iframeEl.contentWindow) {
         iframeEl.contentWindow.postMessage(
           { type: "VIEW_MODE_CHANGE", mode: viewMode },
@@ -147,65 +148,44 @@
       }
     });
 
-    // ── COLLECT OPTIONS FROM MAIN DOCUMENT ───────────────────────────
+    // ── COLLECT OPTIONS ─────────────────────────────────────────────
     function collectOptions() {
-      // 1. We remove :not(.tc-hidden) to ensure we grab elements from all tabs
       const containers = document.querySelectorAll(
         `${OPTIONS_SELECTOR} div.tc-container:not(.tc-hidden)`,
-      );
-
-      console.log(
-        `[DoorConfigurator] Scanning ${containers.length} containers...`,
       );
 
       const result = {};
 
       containers.forEach((container, index) => {
-        // 2. USE .textContent INSTEAD OF .innerText
-        // textContent reads text even if the element is hidden or height is 0.
         const labelEl = container.querySelector(".tc-epo-element-label-text");
-
-        // 3. Create a unique fallback label to prevent overwriting in the result object
         let label = labelEl?.textContent?.trim() || `Field_${index}`;
-
-        // Clean up trailing colons
         label = label.replace(/:$/, "").trim();
 
-        // 4. Get the Value
         const select = container.querySelector("select");
         const input = container.querySelector("input:checked");
         const value = select?.value || input?.value || null;
 
-        // 5. Debug log for every single field found
-        console.log(`[Field #${index}] Label: "${label}" | Value: "${value}"`);
-
-        // 6. Only add to results if a value actually exists
         if (value !== null && value !== "") {
-          // If multiple fields have the same label (e.g. "Abmessung"),
-          // we append the index to keep both values.
           const finalKey = result[label] ? `${label}_${index}` : label;
           result[finalKey] = value;
         }
       });
 
-      console.log("[DoorConfigurator] Final Collected Object:", result);
       return result;
     }
-    // ── SEND OPTIONS INTO THE 3D IFRAME ──────────────────────────────
+
+    // ── SEND OPTIONS ────────────────────────────────────────────────
     function sendOptions(reason) {
-      if (!iframeLoaded || !iframeEl.contentWindow) return;
+      if (!iframeLoaded || !iframeReady || !iframeEl.contentWindow) return;
 
       const options = collectOptions();
-
-      // Skip if nothing changed
       const serialised = JSON.stringify(options);
-      if (serialised === JSON.stringify(lastOptions)) {
-        console.log("[DoorConfigurator] skipped duplicate:", reason);
-        return;
-      }
+
+      if (serialised === JSON.stringify(lastOptions)) return;
 
       lastOptions = options;
-      console.log("[DoorConfigurator] sendOptions triggered:", reason, options);
+
+      console.log("[DoorConfigurator] send:", reason, options);
 
       iframeEl.contentWindow.postMessage(
         { type: "DOOR_OPTIONS", options },
@@ -213,13 +193,12 @@
       );
     }
 
-    // FIX: proper debounce — always fires on the LAST change, never drops events
     function debouncedSend(reason) {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => sendOptions(reason), 100);
     }
 
-    // ── WATCH FOR OPTION CHANGES IN MAIN DOCUMENT ────────────────────
+    // ── WATCH OPTIONS ───────────────────────────────────────────────
     const optionsContainer = document.querySelector(OPTIONS_SELECTOR);
 
     if (optionsContainer) {
@@ -228,26 +207,20 @@
       );
       optionsContainer.addEventListener("input", () => debouncedSend("input"));
 
-      // Catches AJAX-injected options and tc-hidden class toggles
       const observer = new MutationObserver(() => debouncedSend("DOM mutated"));
+
       observer.observe(optionsContainer, {
         subtree: true,
         childList: true,
         attributes: true,
         attributeFilter: ["class", "style"],
       });
-    } else {
-      console.warn(
-        "[DoorConfigurator] Options container not found:",
-        OPTIONS_SELECTOR,
-      );
     }
   }
 
-  // ── WAIT FOR DOM ─────────────────────────────────────────────────
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", main);
   } else {
-    main(); // DOM already ready (script deferred or injected late)
+    main();
   }
 })();

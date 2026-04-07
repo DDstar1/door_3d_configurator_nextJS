@@ -46,6 +46,7 @@ export default function AlbaCanva() {
     }
 
     window.addEventListener("message", handleMessage);
+    window.parent.postMessage({ type: "IFRAME_READY" }, "*");
     return () => {
       window.removeEventListener("message", handleMessage);
       if (debounceTimer.current) clearTimeout(debounceTimer.current);
