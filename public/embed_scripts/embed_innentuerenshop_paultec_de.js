@@ -1,6 +1,7 @@
 (function DoorConfiguratorEmbed() {
   function main() {
     const GALLERY_WRAPPER_SELECTOR = ".product-images";
+    const GALLERY_WRAPPER_PARENT_SELECTOR = ".is-sticky-column__inner";
     const OPTIONS_SELECTOR = "#tm-extra-product-options-fields";
     const IFRAME_3D_URL =
       "https://door-3d-configurator.vercel.app/paultec_alba/embed_alba_iframe";
@@ -24,6 +25,9 @@
     document.head.appendChild(fontLink);
 
     const galleryWrapper = document.querySelector(GALLERY_WRAPPER_SELECTOR);
+    const galleryWrapperParent = document.querySelector(
+      GALLERY_WRAPPER_PARENT_SELECTOR,
+    );
     if (!galleryWrapper) {
       console.warn("[DoorConfigurator] Gallery wrapper not found");
       return;
@@ -169,13 +173,14 @@
         galleryWrapper.classList.add("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
 
-        // Move iframe back to galleryWrapper if it was in fullscreen
-        const existingFullscreen = document.querySelector(
-          `.${fullscreenWrapperClass}`,
-        );
-        if (existingFullscreen) {
+        // Ensure iframe is inside galleryWrapper
+        if (iframeEl.parentElement !== galleryWrapper) {
           galleryWrapper.appendChild(iframeEl);
-          existingFullscreen.remove();
+        }
+
+        // Move galleryWrapper back to its original parent if needed
+        if (galleryWrapper.parentElement !== galleryWrapperParent) {
+          galleryWrapperParent.appendChild(galleryWrapper);
         }
 
         if (!iframeLoaded) {
@@ -187,7 +192,7 @@
       } else if (viewMode === "3d_fullscreen") {
         // Fullscreen mode → move galleryWrapper to body
         galleryWrapper.classList.add("door-3d-active");
-        galleryWrapper.classList.add("door-3d-fullscreen");
+        galleryWrapper.classList.add(fullscreenWrapperClass);
 
         // Move galleryWrapper directly under body
         if (galleryWrapper.parentElement !== document.body) {
@@ -205,17 +210,17 @@
         galleryWrapper.classList.remove("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
 
-        // Move iframe back to galleryWrapper if it was in fullscreen
-        const existingFullscreen = document.querySelector(
-          `.${fullscreenWrapperClass}`,
-        );
-        if (existingFullscreen) {
+        // Ensure iframe is inside galleryWrapper
+        if (iframeEl.parentElement !== galleryWrapper) {
           galleryWrapper.appendChild(iframeEl);
-          existingFullscreen.remove();
+        }
+
+        // Move galleryWrapper back to its original parent if needed
+        if (galleryWrapper.parentElement !== galleryWrapperParent) {
+          galleryWrapperParent.appendChild(galleryWrapper);
         }
       }
     }
-
     // ── TOGGLE CLICK ────────────────────────────────────────────────
     toggle.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
