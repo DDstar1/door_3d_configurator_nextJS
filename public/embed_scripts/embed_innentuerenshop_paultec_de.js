@@ -173,15 +173,8 @@
         galleryWrapper.classList.add("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
 
-        // Ensure iframe is inside galleryWrapper
-        if (iframeEl.parentElement !== galleryWrapper) {
-          galleryWrapper.prepend(iframeEl);
-        }
-
-        // Move galleryWrapper back to its original parent as first child
-        if (galleryWrapper.parentElement !== galleryWrapperParent) {
-          galleryWrapperParent.prepend(galleryWrapper);
-        }
+        // Show the gallery
+        galleryWrapper.style.visibility = "visible";
 
         if (!iframeLoaded) {
           iframeEl.src = IFRAME_3D_URL;
@@ -190,14 +183,12 @@
           debouncedSend("3D reopen");
         }
       } else if (viewMode === "3d_fullscreen") {
-        // Fullscreen mode → move galleryWrapper to body
+        // Fullscreen mode → hide the gallery itself
         galleryWrapper.classList.add("door-3d-active");
         galleryWrapper.classList.add(fullscreenWrapperClass);
 
-        // Move galleryWrapper directly under body as first child
-        if (galleryWrapper.parentElement !== document.body) {
-          document.body.prepend(galleryWrapper);
-        }
+        // Hide gallery content so iframe is fullscreen
+        galleryWrapper.style.visibility = "hidden";
 
         if (!iframeLoaded) {
           iframeEl.src = IFRAME_3D_URL;
@@ -210,15 +201,8 @@
         galleryWrapper.classList.remove("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
 
-        // Ensure iframe is inside galleryWrapper
-        if (iframeEl.parentElement !== galleryWrapper) {
-          galleryWrapper.prepend(iframeEl);
-        }
-
-        // Move galleryWrapper back to its original parent as first child
-        if (galleryWrapper.parentElement !== galleryWrapperParent) {
-          galleryWrapperParent.prepend(galleryWrapper);
-        }
+        // Make sure gallery is visible again
+        galleryWrapper.style.visibility = "visible";
       }
     }
     // ── TOGGLE CLICK ────────────────────────────────────────────────
