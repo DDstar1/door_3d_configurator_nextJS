@@ -6,6 +6,7 @@
       "https://door-3d-configurator.vercel.app/paultec_alba/embed_alba_iframe";
 
     const links = [
+       "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0";
       "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=deployed_code",
       "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=image",
     ];
@@ -17,11 +18,7 @@
       document.head.appendChild(fontLink);
     });
 
-    const fontLink = document.createElement("link");
-    fontLink.rel = "stylesheet";
-    fontLink.href =
-      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0";
-    document.head.appendChild(fontLink);
+
 
     const galleryWrapper = document.querySelector(GALLERY_WRAPPER_SELECTOR);
     if (!galleryWrapper) {
@@ -91,6 +88,23 @@
       .door-3d-active #door-3d-iframe {
         display: block;
       }
+
+           /* 3D fullscreen mode expands container and shows iframe */
+      .door-3d-fullscreen {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 9999 !important;
+        background: #fff;
+        overflow: hidden;
+      }
+      .door-3d-fullscreen #door-3d-iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
     `;
 
     document.head.appendChild(style);
@@ -100,25 +114,18 @@
     // ── UI ──────────────────────────────────────────────────────────
     const toggle = document.createElement("div");
     toggle.className = "door-toggle";
+
     toggle.innerHTML = `
-   <button data-mode="2d" class="active">
-        <span class="material-symbols-outlined">image</span>
-        2D
+      <button data-mode="2d" class="active">
+        <span class="material-symbols-outlined">image</span> 2D
       </button>
-
       <button data-mode="3d">
-      <span class="material-symbols-outlined">deployed_code</span>
-        3D
+        <span class="material-symbols-outlined">deployed_code</span> 3D
       </button>
-
-  <a href="${IFRAME_3D_URL}" target="_blank">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"/>
-      <path d="M5 5h5V3H3v7h2V5z"/>
-    </svg>
-    Iframe
-  </a>
-`;
+      <button data-mode="3d_fullscreen">
+        <span class="material-symbols-outlined">view_in_ar</span> Iframe
+      </button>
+    `;
     galleryWrapper.appendChild(toggle);
 
     const iframeEl = document.createElement("iframe");
@@ -143,23 +150,26 @@
     });
 
     // ── UI UPDATE ───────────────────────────────────────────────────
-    function updateUI() {
+   function updateUI() {
       toggle.querySelectorAll("button").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.mode === viewMode);
       });
 
-      if (viewMode === "3d") {
-        galleryWrapper.classList.add("door-3d-active");
+      // Remove any previous fullscreen class
+      galleryWrapper.classList.remove("door-3d-fullscreen");
 
+      if (viewMode === "3d_fullscreen") {
+        galleryWrapper.classList.add("door-3d-fullscreen");
+      }
+
+      // Show iframe in both 3D and fullscreen
+      if (viewMode === "3d" || viewMode === "3d_fullscreen") {
         if (!iframeLoaded) {
           iframeEl.src = IFRAME_3D_URL;
           iframeLoaded = true;
         } else if (iframeReady) {
-          // Already ready → send immediately
           debouncedSend("3D reopen");
         }
-      } else {
-        galleryWrapper.classList.remove("door-3d-active");
       }
     }
 
