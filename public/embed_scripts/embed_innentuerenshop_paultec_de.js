@@ -6,7 +6,6 @@
       "https://door-3d-configurator.vercel.app/paultec_alba/embed_alba_iframe";
 
     const links = [
-      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0",
       "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=deployed_code",
       "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=image",
     ];
@@ -17,6 +16,12 @@
       fontLink.href = href;
       document.head.appendChild(fontLink);
     });
+
+    const fontLink = document.createElement("link");
+    fontLink.rel = "stylesheet";
+    fontLink.href =
+      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0";
+    document.head.appendChild(fontLink);
 
     const galleryWrapper = document.querySelector(GALLERY_WRAPPER_SELECTOR);
     if (!galleryWrapper) {
@@ -114,12 +119,16 @@
     toggle.className = "door-toggle";
 
     toggle.innerHTML = `
-      <button data-mode="2d" class="active">
-        <span class="material-symbols-outlined">image</span> 2D
+  <button data-mode="2d" class="active">
+        <span class="material-symbols-outlined">image</span>
+        2D
       </button>
+
       <button data-mode="3d">
-        <span class="material-symbols-outlined">deployed_code</span> 3D
+      <span class="material-symbols-outlined">deployed_code</span>
+        3D
       </button>
+
       <button data-mode="3d_fullscreen">
         <span class="material-symbols-outlined">view_in_ar</span> Iframe
       </button>
@@ -153,21 +162,30 @@
         btn.classList.toggle("active", btn.dataset.mode === viewMode);
       });
 
-      // Remove any previous fullscreen class
-      galleryWrapper.classList.remove("door-3d-fullscreen");
+      if (viewMode === "3d") {
+        galleryWrapper.classList.add("door-3d-active");
 
-      if (viewMode === "3d_fullscreen") {
-        galleryWrapper.classList.add("door-3d-fullscreen");
-      }
-
-      // Show iframe in both 3D and fullscreen
-      if (viewMode === "3d" || viewMode === "3d_fullscreen") {
         if (!iframeLoaded) {
           iframeEl.src = IFRAME_3D_URL;
           iframeLoaded = true;
         } else if (iframeReady) {
+          // Already ready → send immediately
           debouncedSend("3D reopen");
         }
+      } else if (viewMode === "3d_fullscreen") {
+        galleryWrapper.classList.add("door-3d-active");
+        galleryWrapper.classList.add("door-3d-fullscreen");
+
+        if (!iframeLoaded) {
+          iframeEl.src = IFRAME_3D_URL;
+          iframeLoaded = true;
+        } else if (iframeReady) {
+          // Already ready → send immediately
+          debouncedSend("3D reopen");
+        }
+      } else {
+        galleryWrapper.classList.remove("door-3d-active");
+        galleryWrapper.classList.remove("door-3d-fullscreen");
       }
     }
 
