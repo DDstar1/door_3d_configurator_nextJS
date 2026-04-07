@@ -24,9 +24,6 @@ export async function POST(req: NextRequest) {
 
   const valuesRef = buildValuesReference();
 
-  console.log("[map-door-options] Received raw options:", valuesRef);
-  console.log("Request body:", body);
-
   const prompt = `
 You are a mapping assistant for a door configurator.
 

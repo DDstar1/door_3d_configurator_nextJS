@@ -15,7 +15,8 @@ export async function mapDoorOptions(
     }
 
     const data = await response.json();
-    console.log("[mapDoorOptions] mapped →", data.mapped);
+    console.log("Raw Client Form response →", rawDict);
+    console.log("[mapDoorOptions] API response →", data.mapped);
     return data.mapped ?? {};
   } catch (err) {
     console.error("[mapDoorOptions] fetch failed:", err);
