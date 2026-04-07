@@ -20,16 +20,16 @@ export function Model(props) {
   /* ===============================
      GLOBAL STORE VALUES
   =============================== */
-  const verglasung = useDoorStore((s) => s.door.verglasung);
-  const doorWidth = useDoorStore((s) => s.door.width);
-  const doorHeight = useDoorStore((s) => s.door.height);
-  const schloss = useDoorStore((s) => s.door.schloss);
-  const doorType = useDoorStore((s) => s.door.doorType);
-  const anschlag = useDoorStore((s) => s.door.anschlag);
-  const zargen = useDoorStore((s) => s.door.zarge);
-  const band = useDoorStore((s) => s.door.band);
-  const boden = useDoorStore((s) => s.door.boden);
-  const vent = useDoorStore((s) => s.door.lueftung);
+  const verglasung = useDoorStore((s) => s.door.verglasung_store);
+  const doorWidth = useDoorStore((s) => s.door.width_store);
+  const doorHeight = useDoorStore((s) => s.door.height_store);
+  const schloss = useDoorStore((s) => s.door.schloss_store);
+  const doorType = useDoorStore((s) => s.door.doorType_store);
+  const anschlag = useDoorStore((s) => s.door.anschlag_store);
+  const zargen = useDoorStore((s) => s.door.zarge_store);
+  const band = useDoorStore((s) => s.door.band_store);
+  const boden = useDoorStore((s) => s.door.boden_store);
+  const vent = useDoorStore((s) => s.door.lueftung_store);
 
   const door_collection_ref = useRef();
   const frame_collection_ref = useRef();
