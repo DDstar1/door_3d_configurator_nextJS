@@ -50,6 +50,7 @@
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         font-family: sans-serif;
         height: 40px;
+        gap: 6px;
       }
 
       .door-toggle button
@@ -65,6 +66,7 @@
         color: #555;
         text-decoration: none;
         height: 100%;
+        margin:0px;
       }
 
       .door-toggle button:hover:not(.active){
@@ -187,7 +189,7 @@
           iframeEl.src = IFRAME_3D_URL;
           iframeLoaded = true;
         } else if (iframeReady) {
-          debouncedSend("3D reopen");
+          debouncedSend("Screen_Change 3D reopen");
         }
       } else if (viewMode === "3d_fullscreen") {
         // Fullscreen mode → move galleryWrapper to body
@@ -203,7 +205,7 @@
           iframeEl.src = IFRAME_3D_URL;
           iframeLoaded = true;
         } else if (iframeReady) {
-          debouncedSend("3D fullscreen reopen");
+          debouncedSend("Screen_Change 3D fullscreen reopen");
         }
       } else {
         // 2D mode
@@ -272,7 +274,11 @@
       const options = collectOptions();
       const serialised = JSON.stringify(options);
 
-      if (serialised === JSON.stringify(lastOptions)) return;
+      if (
+        serialised === JSON.stringify(lastOptions) &&
+        !reason.includes("Screen_Change")
+      )
+        return;
 
       lastOptions = options;
 
