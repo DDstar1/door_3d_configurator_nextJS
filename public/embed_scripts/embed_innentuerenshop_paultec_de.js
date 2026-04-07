@@ -1,15 +1,21 @@
 (function DoorConfiguratorEmbed() {
-  const fontLink = document.createElement("link");
-  fontLink.rel = "stylesheet";
-  fontLink.href = "https://fonts.googleapis.com/icon?family=Material+Icons";
-
   function main() {
     const GALLERY_WRAPPER_SELECTOR = ".product-images";
     const OPTIONS_SELECTOR = "#tm-extra-product-options-fields";
     const IFRAME_3D_URL =
       "https://door-3d-configurator.vercel.app/paultec_alba/embed_alba_iframe";
 
-    document.head.appendChild(fontLink);
+    const links = [
+      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=deployed_code",
+      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=image",
+    ];
+
+    links.forEach((href) => {
+      const fontLink = document.createElement("link");
+      fontLink.rel = "stylesheet";
+      fontLink.href = href;
+      document.head.appendChild(fontLink);
+    });
 
     const galleryWrapper = document.querySelector(GALLERY_WRAPPER_SELECTOR);
     if (!galleryWrapper) {
@@ -89,21 +95,24 @@
     const toggle = document.createElement("div");
     toggle.className = "door-toggle";
     toggle.innerHTML = `
-        <button data-mode="2d" class="active">
-              <span class="material-symbols-outlined">image</span>
-              2D
-            </button>
+   <button data-mode="2d" class="active">
+        <span class="material-symbols-outlined">image</span>
+        2D
+      </button>
 
-    
+      <button data-mode="3d">
+      <span class="material-symbols-outlined">deployed_code</span>
+        3D
+      </button>
 
-        <a href="${IFRAME_3D_URL}" target="_blank">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"/>
-            <path d="M5 5h5V3H3v7h2V5z"/>
-          </svg>
-          Iframe
-        </a>
-      `;
+  <a href="${IFRAME_3D_URL}" target="_blank">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"/>
+      <path d="M5 5h5V3H3v7h2V5z"/>
+    </svg>
+    Iframe
+  </a>
+`;
     galleryWrapper.appendChild(toggle);
 
     const iframeEl = document.createElement("iframe");
@@ -239,6 +248,6 @@
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", main);
   } else {
-    // main();
+    main();
   }
 })();
