@@ -1,11 +1,12 @@
 (function () {
-  const IFRAME_ID = "door-configurator";
+  const IFRAME_CLASS =
+    ".woocommerce-product-gallery__wrapper .flickity-viewport";
   const VISIBLE_OPTIONS_SELECTOR =
     "#tm-extra-product-options-fields div.tc-container:not(.tc-hidden)";
 
-  const iframe = document.getElementById(IFRAME_ID);
+  const iframe = document.querySelector(IFRAME_CLASS);
   if (!iframe) {
-    console.warn("[DoorConfigurator] iframe not found");
+    console.warn("[DoorConfigurator] Iframe Wrapper not found");
     return;
   }
 
