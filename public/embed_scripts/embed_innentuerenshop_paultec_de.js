@@ -1,7 +1,7 @@
-(function () {
+(function DoorConfiguratorEmbed() {
   function main() {
     // ── SELECTORS ────────────────────────────────────────────────────
-    const GALLERY_WRAPPER_SELECTOR = ".woocommerce-product-gallery__wrapper";
+    const GALLERY_WRAPPER_SELECTOR = ".product-images";
     const OPTIONS_SELECTOR = "#tm-extra-product-options-fields";
     const IFRAME_3D_URL =
       "https://door-3d-configurator.vercel.app/paultec_alba/embed_alba_iframe";
@@ -28,6 +28,7 @@
         overflow: hidden;
         box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         font-family: sans-serif;
+        height: 40px;
       }
 
       .door-toggle button,
@@ -42,6 +43,7 @@
         background: white;
         color: #555;
         text-decoration: none;
+        height: 100%;
       }
 
       .door-toggle button:hover,
@@ -99,7 +101,10 @@
     // ── STATE ────────────────────────────────────────────────────────
     let viewMode = "2d";
     let iframeLoaded = false;
+    let lastOptions = null; // FIX: declared before first use in sendOptions
+    let debounceTimer = null; // FIX: replaces broken hasRun flag
 
+    // ── UI UPDATE ────────────────────────────────────────────────────
     function updateUI() {
       toggle.querySelectorAll("button").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.mode === viewMode);
@@ -112,7 +117,7 @@
         if (!iframeLoaded) {
           iframeEl.src = IFRAME_3D_URL;
           iframeLoaded = true;
-          // Send current options once iframe finishes loading
+          // Send the latest cached options once iframe finishes loading
           iframeEl.addEventListener(
             "load",
             () => sendOptions("iframe loaded"),
@@ -144,25 +149,41 @@
     });
 
     // ── COLLECT OPTIONS FROM MAIN DOCUMENT ───────────────────────────
-    // Options live in the main document, NOT inside an iframe
     function collectOptions() {
       const containers = document.querySelectorAll(
         `${OPTIONS_SELECTOR} div.tc-container:not(.tc-hidden)`,
       );
+
+      console.log(
+        "[DoorConfigurator] Collecting options from",
+        containers.length,
+        "containers",
+      );
+
+      console.log(
+        "[DoorConfigurator] Collecting options from",
+        containers,
+        "containers",
+      );
+
       const result = {};
 
       containers.forEach((container) => {
+        // Use the correct label selector
         const label =
-          container.querySelector(".tc-label-text")?.innerText.trim() ||
-          "Unknown";
+          container
+            .querySelector(".tc-epo-element-label-text")
+            ?.innerText.trim() || "Unknown";
 
-        const value =
-          container.querySelector("select")?.value ||
-          container.querySelector("input:checked")?.value ||
-          null;
+        const select = container.querySelector("select");
+        const input = container.querySelector("input:checked");
+
+        const value = select?.value || input?.value || null;
 
         result[label] = value;
       });
+
+      console.log("[DoorConfigurator] Collected options:", result);
 
       return result;
     }
@@ -172,26 +193,40 @@
       if (!iframeLoaded || !iframeEl.contentWindow) return;
 
       const options = collectOptions();
+
+      // Skip if nothing changed
+      const serialised = JSON.stringify(options);
+      if (serialised === JSON.stringify(lastOptions)) {
+        console.log("[DoorConfigurator] skipped duplicate:", reason);
+        return;
+      }
+
+      lastOptions = options;
       console.log("[DoorConfigurator] sendOptions triggered:", reason, options);
 
       iframeEl.contentWindow.postMessage(
-        {
-          type: "DOOR_OPTIONS",
-          options,
-        },
+        { type: "DOOR_OPTIONS", options },
         "*",
       );
+    }
+
+    // FIX: proper debounce — always fires on the LAST change, never drops events
+    function debouncedSend(reason) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => sendOptions(reason), 100);
     }
 
     // ── WATCH FOR OPTION CHANGES IN MAIN DOCUMENT ────────────────────
     const optionsContainer = document.querySelector(OPTIONS_SELECTOR);
 
     if (optionsContainer) {
-      optionsContainer.addEventListener("change", () => sendOptions("change"));
-      optionsContainer.addEventListener("input", () => sendOptions("input"));
+      optionsContainer.addEventListener("change", () =>
+        debouncedSend("change"),
+      );
+      optionsContainer.addEventListener("input", () => debouncedSend("input"));
 
-      // MutationObserver catches AJAX-injected options and tc-hidden toggles
-      const observer = new MutationObserver(() => sendOptions("DOM mutated"));
+      // Catches AJAX-injected options and tc-hidden class toggles
+      const observer = new MutationObserver(() => debouncedSend("DOM mutated"));
       observer.observe(optionsContainer, {
         subtree: true,
         childList: true,
@@ -206,7 +241,7 @@
     }
   }
 
-  // ── WAIT FOR DOM ──────────────────────────────────────────────────
+  // ── WAIT FOR DOM ─────────────────────────────────────────────────
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", main);
   } else {
