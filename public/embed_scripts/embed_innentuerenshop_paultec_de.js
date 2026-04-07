@@ -48,7 +48,7 @@
 
       .door-toggle button:hover,
       .door-toggle a:hover {
-        background: #f3f4f6;
+      background: #fca5a5;
       }
 
       .door-toggle .active {
@@ -150,44 +150,48 @@
 
     // ── COLLECT OPTIONS FROM MAIN DOCUMENT ───────────────────────────
     function collectOptions() {
+      // 1. We remove :not(.tc-hidden) to ensure we grab elements from all tabs
       const containers = document.querySelectorAll(
         `${OPTIONS_SELECTOR} div.tc-container:not(.tc-hidden)`,
       );
 
       console.log(
-        "[DoorConfigurator] Collecting options from",
-        containers.length,
-        "containers",
-      );
-
-      console.log(
-        "[DoorConfigurator] Collecting options from",
-        containers,
-        "containers",
+        `[DoorConfigurator] Scanning ${containers.length} containers...`,
       );
 
       const result = {};
 
-      containers.forEach((container) => {
-        // Use the correct label selector
-        const label =
-          container
-            .querySelector(".tc-epo-element-label-text")
-            ?.innerText.trim() || "Unknown";
+      containers.forEach((container, index) => {
+        // 2. USE .textContent INSTEAD OF .innerText
+        // textContent reads text even if the element is hidden or height is 0.
+        const labelEl = container.querySelector(".tc-epo-element-label-text");
 
+        // 3. Create a unique fallback label to prevent overwriting in the result object
+        let label = labelEl?.textContent?.trim() || `Field_${index}`;
+
+        // Clean up trailing colons
+        label = label.replace(/:$/, "").trim();
+
+        // 4. Get the Value
         const select = container.querySelector("select");
         const input = container.querySelector("input:checked");
-
         const value = select?.value || input?.value || null;
 
-        result[label] = value;
+        // 5. Debug log for every single field found
+        console.log(`[Field #${index}] Label: "${label}" | Value: "${value}"`);
+
+        // 6. Only add to results if a value actually exists
+        if (value !== null && value !== "") {
+          // If multiple fields have the same label (e.g. "Abmessung"),
+          // we append the index to keep both values.
+          const finalKey = result[label] ? `${label}_${index}` : label;
+          result[finalKey] = value;
+        }
       });
 
-      console.log("[DoorConfigurator] Collected options:", result);
-
+      console.log("[DoorConfigurator] Final Collected Object:", result);
       return result;
     }
-
     // ── SEND OPTIONS INTO THE 3D IFRAME ──────────────────────────────
     function sendOptions(reason) {
       if (!iframeLoaded || !iframeEl.contentWindow) return;
