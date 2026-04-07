@@ -46,11 +46,10 @@
         height: 100%;
       }
 
-      .door-toggle button:hover,
-      .door-toggle a:hover {
-      background: #fca5a5;
-      }
-
+    .door-toggle button:hover:not(.active),
+.door-toggle a:hover:not(.active) {
+  background: #fca5a5;
+}
       .door-toggle .active {
         background: #7f1d1d;
         color: white;
