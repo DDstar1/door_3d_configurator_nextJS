@@ -1,26 +1,14 @@
 (function DoorConfiguratorEmbed() {
+  const fontLink = document.createElement("link");
+  fontLink.rel = "stylesheet";
+  fontLink.href = "https://fonts.googleapis.com/icon?family=Material+Icons";
+
   function main() {
     const GALLERY_WRAPPER_SELECTOR = ".product-images";
     const OPTIONS_SELECTOR = "#tm-extra-product-options-fields";
     const IFRAME_3D_URL =
       "https://door-3d-configurator.vercel.app/paultec_alba/embed_alba_iframe";
 
-    const links = [
-      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=deployed_code",
-      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=image",
-    ];
-
-    links.forEach((href) => {
-      const fontLink = document.createElement("link");
-      fontLink.rel = "stylesheet";
-      fontLink.href = href;
-      document.head.appendChild(fontLink);
-    });
-
-    const fontLink = document.createElement("link");
-    fontLink.rel = "stylesheet";
-    fontLink.href =
-      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0";
     document.head.appendChild(fontLink);
 
     const galleryWrapper = document.querySelector(GALLERY_WRAPPER_SELECTOR);
@@ -33,25 +21,66 @@
 
     // ── STYLES ──────────────────────────────────────────────────────
     const style = document.createElement("style");
-    toggle.innerHTML = `
-   <button data-mode="2d" class="active">
-        <span class="material-symbols-outlined">image</span>
-        2D
-      </button>
+    style.innerHTML = `
+      .door-toggle {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 10001;
+        display: flex;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        font-family: sans-serif;
+        height: 40px;
+      }
 
-      <button data-mode="3d">
-        <span class="material-symbols-outlined">deployed_code</span>
-        3D
-      </button>
+      .door-toggle button,
+      .door-toggle a {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        font-size: 13px;
+        cursor: pointer;
+        border: none;
+        background: white;
+        color: #555;
+        text-decoration: none;
+        height: 100%;
+      }
 
-  <a href="${IFRAME_3D_URL}" target="_blank">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"/>
-      <path d="M5 5h5V3H3v7h2V5z"/>
-    </svg>
-    Iframe
-  </a>
-`;
+      .door-toggle button:hover:not(.active),
+      .door-toggle a:hover:not(.active) {
+        background: #fca5a5;
+      }
+
+      .door-toggle .active {
+        background: #7f1d1d;
+        color: white;
+      }
+
+      .door-3d-active .flickity-viewport {
+        visibility: hidden;
+      }
+
+      #door-3d-iframe {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        z-index: 10000;
+      }
+
+      .door-3d-active #door-3d-iframe {
+        display: block;
+      }
+    `;
+
     document.head.appendChild(style);
 
     galleryWrapper.style.position = "relative";
@@ -60,10 +89,24 @@
     const toggle = document.createElement("div");
     toggle.className = "door-toggle";
     toggle.innerHTML = `
-      <button data-mode="2d" class="active">2D</button>
-      <button data-mode="3d">3D</button>
-      <a href="${IFRAME_3D_URL}" target="_blank">Iframe</a>
-    `;
+        <button data-mode="2d" class="active">
+              <span class="material-symbols-outlined">image</span>
+              2D
+            </button>
+
+            <button data-mode="3d">
+        <span class="material-symbols-outlined">view_in_ar</span>
+              3D
+            </button>
+
+        <a href="${IFRAME_3D_URL}" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3z"/>
+            <path d="M5 5h5V3H3v7h2V5z"/>
+          </svg>
+          Iframe
+        </a>
+      `;
     galleryWrapper.appendChild(toggle);
 
     const iframeEl = document.createElement("iframe");
