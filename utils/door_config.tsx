@@ -1,4 +1,6 @@
 const DOOR_VALUES = {
+  HOHE: 2100,
+  BREITE: 900,
   TURTYP_OPTION: {
     Gefalzt: "Gefalzt",
     Stumpf: "Stumpf",
