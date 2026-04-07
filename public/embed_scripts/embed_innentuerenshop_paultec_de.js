@@ -48,8 +48,8 @@
         height: 40px;
       }
 
-      .door-toggle button,
-      .door-toggle a {
+      .door-toggle button
+      {
         display: flex;
         align-items: center;
         gap: 6px;
@@ -63,8 +63,7 @@
         height: 100%;
       }
 
-      .door-toggle button:hover:not(.active),
-      .door-toggle a:hover:not(.active) {
+      .door-toggle button:hover:not(.active){
         background: #fca5a5;
       }
 
