@@ -6,7 +6,7 @@ Command: npx gltfjsx@6.5.3 door_model.glb
 import React, { useEffect, useRef, useState } from "react";
 import { useGLTF, useHelper } from "@react-three/drei";
 import { useDoorStore } from "@/store/door_store";
-import DOOR_VALUES from "@/utils/door_config";
+import { DOOR_VALUES } from "@/utils/door_config";
 import {
   getHardwareColour,
   getMetrics,

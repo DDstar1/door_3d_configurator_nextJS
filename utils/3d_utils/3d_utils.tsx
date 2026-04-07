@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useTexture } from "@react-three/drei";
 import { useLoader } from "@react-three/fiber";
 import { useMemo } from "react";
-import DOOR_VALUES from "@/utils/door_config";
+import { DOOR_VALUES } from "@/utils/door_config";
 
 export const getHardwareColour = (hardware: any) => {
   if (!hardware) return null;

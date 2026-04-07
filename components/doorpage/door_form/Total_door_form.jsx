@@ -12,11 +12,6 @@ import ExtrasTab from "./extras";
 export function DoorConfigurationForm2() {
   const [activeTab, setActiveTab] = useState("Typ");
 
-  // Typ state
-  const [doorType, setDoorType] = useState("Stumpf");
-  const [insertType, setInsertType] = useState("Röhrenspanplatte (RSP)");
-  const [anschlag, setAnschlag] = useState("DIN rechts");
-
   const tabs = ["Typ", "Maße", "Zargen", "Sicherheit", "Extras"];
 
   return (
@@ -36,16 +31,7 @@ export function DoorConfigurationForm2() {
       {/* Tab Content */}
       <div className="border border-black px-4">
         <div className="mt-6"></div>
-        {activeTab === "Typ" && (
-          <TypTab
-            doorType={doorType}
-            setDoorType={setDoorType}
-            insertType={insertType}
-            setInsertType={setInsertType}
-            anschlag={anschlag}
-            setAnschlag={setAnschlag}
-          />
-        )}
+        {activeTab === "Typ" && <TypTab />}
 
         {activeTab === "Maße" && <MassTab />}
         {activeTab === "Zargen" && <ZargenTab />}

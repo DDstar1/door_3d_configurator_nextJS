@@ -1,12 +1,12 @@
 import { useDoorStore } from "@/store/door_store";
-import DOOR_VALUES from "@/utils/door_config";
+import { DOOR_VALUES } from "@/utils/door_config";
 
 export default function ExtrasTab() {
-  const lueftung = useDoorStore((s) => s.door.lueftung);
-  const dichtung = useDoorStore((s) => s.door.dichtung);
-  const boden = useDoorStore((s) => s.door.boden);
-  const lichtoeffnung = useDoorStore((s) => s.door.lichtoeffnung);
-  const verglasung = useDoorStore((s) => s.door.verglasung);
+  const lueftung = useDoorStore((s) => s.door.lueftung_store);
+  const dichtung = useDoorStore((s) => s.door.dichtung_store);
+  const boden = useDoorStore((s) => s.door.boden_store);
+  const lichtoeffnung = useDoorStore((s) => s.door.lichtoeffnung_store);
+  const verglasung = useDoorStore((s) => s.door.verglasung_store);
   const setDoorField = useDoorStore((s) => s.setDoorField);
 
   const { BODENDICHTUNG, VERGLASUNG_OPTIONS, LUEFTUNGSBOHRUNG } = DOOR_VALUES;

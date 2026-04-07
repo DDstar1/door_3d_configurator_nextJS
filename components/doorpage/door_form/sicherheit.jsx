@@ -1,11 +1,11 @@
 import { useDoorStore } from "@/store/door_store";
-import DOOR_VALUES from "@/utils/door_config";
+import { DOOR_VALUES } from "@/utils/door_config";
 
 export default function SicherheitTab() {
-  const schloss = useDoorStore((s) => s.door.schloss);
-  const band = useDoorStore((s) => s.door.band);
-  const schliessblech = useDoorStore((s) => s.door.schliessblech);
-  const doorType = useDoorStore((s) => s.door.doorType);
+  const schloss = useDoorStore((s) => s.door.schloss_store);
+  const band = useDoorStore((s) => s.door.band_store);
+  const schliessblech = useDoorStore((s) => s.door.schliessblech_store);
+  const doorType = useDoorStore((s) => s.door.doorType_store);
 
   const setDoorField = useDoorStore((s) => s.setDoorField);
 

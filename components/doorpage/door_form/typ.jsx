@@ -1,10 +1,10 @@
 import { useDoorStore } from "@/store/door_store";
-import DOOR_VALUES from "@/utils/door_config";
+import { DOOR_VALUES } from "@/utils/door_config";
 
 export default function TypTab() {
-  const doorType = useDoorStore((s) => s.door.doorType);
-  const insertType = useDoorStore((s) => s.door.insertType);
-  const anschlag = useDoorStore((s) => s.door.anschlag);
+  const doorType = useDoorStore((s) => s.door.doorType_store);
+  const insertType = useDoorStore((s) => s.door.insertType_store);
+  const anschlag = useDoorStore((s) => s.door.anschlag_store);
   const setDoorField = useDoorStore((s) => s.setDoorField);
 
   const { TURTYP_OPTION, ANSCHLAG_TYPES } = DOOR_VALUES;

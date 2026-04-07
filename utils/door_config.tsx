@@ -71,4 +71,26 @@ const DOOR_VALUES = {
   },
 } as const;
 
-export default DOOR_VALUES;
+const INITIAL_DOOR_STATE = {
+  lueftung_store: DOOR_VALUES.LUEFTUNGSBOHRUNG.OHNE_KERNLOCHBOHRUNG,
+  dichtung_store: "Standard (Zargendichtung)",
+  boden_store: DOOR_VALUES.BODENDICHTUNG.OHNE_BODENDICHTUNG,
+  lichtoeffnung_store: "Norm-LÖ 1011 V003",
+
+  verglasung_store: DOOR_VALUES.VERGLASUNG_OPTIONS.CHINCHILLA_WEISS,
+  doorType_store: DOOR_VALUES.TURTYP_OPTION.Gefalzt,
+  anschlag_store: DOOR_VALUES.ANSCHLAG_TYPES.DIN_LEFT,
+
+  width_store: 900,
+  height_store: 2100,
+
+  schloss_store: DOOR_VALUES.LOCK_OPTIONS.BB_EDELSTAHL,
+  band_store: DOOR_VALUES.BAND_OPTIONS.EINBOHRBAND_3TLG_MATT_SCHWARZ,
+  schliessblech_store: DOOR_VALUES.SCHLIESSBLECHE_OPTIONS.NR_418_EDELSTAHL,
+
+  zarge_store: DOOR_VALUES.ZARGEN_OPTIONS.OHNE_ZARGEN,
+  bekleidung_store: "62,5 mm",
+  wandstaerke_store: "80 mm (77 - 97 mm)",
+} as const;
+
+export { DOOR_VALUES, INITIAL_DOOR_STATE };

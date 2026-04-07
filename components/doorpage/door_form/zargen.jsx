@@ -1,12 +1,12 @@
 "use client";
 
 import { useDoorStore } from "@/store/door_store";
-import DOOR_VALUES from "@/utils/door_config";
+import { DOOR_VALUES } from "@/utils/door_config";
 
 export default function ZargenTab() {
-  const zarge = useDoorStore((s) => s.door.zarge);
-  const bekleidung = useDoorStore((s) => s.door.bekleidung);
-  const wandstaerke = useDoorStore((s) => s.door.wandstaerke);
+  const zarge = useDoorStore((s) => s.door.zarge_store);
+  const bekleidung = useDoorStore((s) => s.door.bekleidung_store);
+  const wandstaerke = useDoorStore((s) => s.door.wandstaerke_store);
   const setDoorField = useDoorStore((s) => s.setDoorField);
 
   const { ZARGEN_OPTIONS } = DOOR_VALUES;

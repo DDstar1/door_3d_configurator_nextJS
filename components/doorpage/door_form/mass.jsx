@@ -3,8 +3,8 @@ import { useDoorStore } from "@/store/door_store";
 
 export default function MassTab() {
   // Subscribe to width and height in the store
-  const width = useDoorStore((s) => s.door.width);
-  const height = useDoorStore((s) => s.door.height);
+  const width = useDoorStore((s) => s.door.width_store);
+  const height = useDoorStore((s) => s.door.height_store);
   const setDoorField = useDoorStore((s) => s.setDoorField);
 
   // Local temporary state for typing

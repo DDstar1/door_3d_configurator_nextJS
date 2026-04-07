@@ -1,4 +1,4 @@
-import DOOR_VALUES from "./door_config";
+import { DOOR_VALUES } from "./door_config";
 
 type ValueOf<T> = T[keyof T];
 
@@ -12,23 +12,23 @@ export type Schliessblech = ValueOf<typeof DOOR_VALUES.SCHLIESSBLECHE_OPTIONS>;
 export type Verglasung = ValueOf<typeof DOOR_VALUES.VERGLASUNG_OPTIONS>;
 
 export type DoorState = {
-  lueftung: string;
-  dichtung: string;
-  boden: BodenDichtung;
-  lichtoeffnung: string;
+  lueftung_store: string;
+  dichtung_store: string;
+  boden_store: BodenDichtung;
+  lichtoeffnung_store: string;
 
-  verglasung: Verglasung;
-  doorType: DoorType;
-  anschlag: Anschlag;
+  verglasung_store: Verglasung;
+  doorType_store: DoorType;
+  anschlag_store: Anschlag;
 
-  width: number;
-  height: number;
+  width_store: number;
+  height_store: number;
 
-  schloss: Lock;
-  band: Band;
-  schliessblech: Schliessblech;
+  schloss_store: Lock;
+  band_store: Band;
+  schliessblech_store: Schliessblech;
 
-  zarge: Zarge;
-  bekleidung: string;
-  wandstaerke: string;
+  zarge_store: Zarge;
+  bekleidung_store: string;
+  wandstaerke_store: string;
 };
