@@ -53,8 +53,7 @@
         gap: 6px;
       }
 
-      .door-toggle button
-      {
+      .door-toggle button {
         display: flex;
         align-items: center;
         gap: 6px;
@@ -66,10 +65,10 @@
         color: #555;
         text-decoration: none;
         height: 100%;
-        margin:0px;
+        margin: 0px;
       }
 
-      .door-toggle button:hover:not(.active){
+      .door-toggle button:hover:not(.active) {
         background: #fca5a5;
       }
 
@@ -97,7 +96,6 @@
         display: block;
       }
 
-           /* 3D fullscreen mode expands container and shows iframe */
       .door-3d-fullscreen {
         position: fixed !important;
         top: 0 !important;
@@ -108,6 +106,7 @@
         background: #fff;
         overflow: hidden;
       }
+
       .door-3d-fullscreen #door-3d-iframe {
         display: block;
         width: 100%;
@@ -128,12 +127,10 @@
         <span class="material-symbols-outlined">image</span>
         2D
       </button>
-
       <button data-mode="3d">
-      <span class="material-symbols-outlined">deployed_code</span>
+        <span class="material-symbols-outlined">deployed_code</span>
         3D
       </button>
-
       <button data-mode="3d_fullscreen">
         <span class="material-symbols-outlined">view_in_ar</span> Iframe
       </button>
@@ -145,10 +142,26 @@
     iframeEl.setAttribute("allowfullscreen", "true");
     galleryWrapper.appendChild(iframeEl);
 
+    // ── HELPER: move element preserving state ──────────────────────
+    // Uses moveBefore() where available (Chrome/Firefox), falls back
+    // to prepend() for Safari which would reload the iframe.
+    function moveElementBefore(parent, element, referenceNode) {
+      if (typeof parent.moveBefore === "function") {
+        parent.moveBefore(element, referenceNode);
+      } else {
+        // Safari fallback — state may reset on iframe move
+        if (referenceNode) {
+          parent.insertBefore(element, referenceNode);
+        } else {
+          parent.prepend(element);
+        }
+      }
+    }
+
     // ── STATE ───────────────────────────────────────────────────────
     let viewMode = "2d";
     let iframeLoaded = false;
-    let iframeReady = false; // 🔥 NEW
+    let iframeReady = false;
     let lastOptions = null;
     let debounceTimer = null;
 
@@ -163,7 +176,6 @@
 
     // ── UI UPDATE ───────────────────────────────────────────────────
     function updateUI() {
-      // Update toggle button states
       toggle.querySelectorAll("button").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.mode === viewMode);
       });
@@ -171,18 +183,25 @@
       const fullscreenWrapperClass = "door-3d-fullscreen";
 
       if (viewMode === "3d") {
-        // Normal 3D view inside gallery
         galleryWrapper.classList.add("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
 
-        // Ensure iframe is inside galleryWrapper
+        // Move iframe back inside galleryWrapper if needed
         if (iframeEl.parentElement !== galleryWrapper) {
-          galleryWrapper.prepend(iframeEl);
+          moveElementBefore(
+            galleryWrapper,
+            iframeEl,
+            galleryWrapper.firstChild,
+          );
         }
 
-        // Move galleryWrapper back to its original parent as first child
+        // Move galleryWrapper back to its original parent
         if (galleryWrapper.parentElement !== galleryWrapperParent) {
-          galleryWrapperParent.prepend(galleryWrapper);
+          moveElementBefore(
+            galleryWrapperParent,
+            galleryWrapper,
+            galleryWrapperParent.firstChild,
+          );
         }
 
         if (!iframeLoaded) {
@@ -192,13 +211,17 @@
           debouncedSend("Screen_Change 3D reopen");
         }
       } else if (viewMode === "3d_fullscreen") {
-        // Fullscreen mode → move galleryWrapper to body
         galleryWrapper.classList.add("door-3d-active");
         galleryWrapper.classList.add(fullscreenWrapperClass);
 
-        // Move galleryWrapper directly under body as first child
+        // Use moveBefore() to move galleryWrapper to body without
+        // destroying the iframe's state/src
         if (galleryWrapper.parentElement !== document.body) {
-          document.body.prepend(galleryWrapper);
+          moveElementBefore(
+            document.body,
+            galleryWrapper,
+            document.body.firstChild,
+          );
         }
 
         if (!iframeLoaded) {
@@ -212,17 +235,25 @@
         galleryWrapper.classList.remove("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
 
-        // Ensure iframe is inside galleryWrapper
         if (iframeEl.parentElement !== galleryWrapper) {
-          galleryWrapper.prepend(iframeEl);
+          moveElementBefore(
+            galleryWrapper,
+            iframeEl,
+            galleryWrapper.firstChild,
+          );
         }
 
-        // Move galleryWrapper back to its original parent as first child
+        // Move galleryWrapper back to its original parent
         if (galleryWrapper.parentElement !== galleryWrapperParent) {
-          galleryWrapperParent.prepend(galleryWrapper);
+          moveElementBefore(
+            galleryWrapperParent,
+            galleryWrapper,
+            galleryWrapperParent.firstChild,
+          );
         }
       }
     }
+
     // ── TOGGLE CLICK ────────────────────────────────────────────────
     toggle.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
@@ -269,25 +300,33 @@
 
     // ── SEND OPTIONS ────────────────────────────────────────────────
     function sendOptions(reason) {
-      if (!iframeLoaded || !iframeReady || !iframeEl.contentWindow) return;
+      if (!iframeEl || !iframeEl.contentWindow) {
+        console.log("[DoorConfigurator] No iframe found, retrying...");
+        setTimeout(() => sendOptions(reason), 500);
+        return;
+      }
 
       const options = collectOptions();
       const serialised = JSON.stringify(options);
+      const isScreenChange = reason?.includes("Screen_Change");
 
-      if (
-        serialised === JSON.stringify(lastOptions) &&
-        !reason.includes("Screen_Change")
-      )
-        return;
+      if (serialised === JSON.stringify(lastOptions)) return;
 
       lastOptions = options;
 
-      console.log("[DoorConfigurator] send:", reason, options);
+      console.log("[DoorConfigurator] sending to iframe:", reason, options);
+      console.log("[DoorConfigurator] iframe src:", iframeEl.src);
+      console.log("[DoorConfigurator] iframe ready state:", iframeReady);
 
-      iframeEl.contentWindow.postMessage(
-        { type: "DOOR_OPTIONS", options },
-        "*",
-      );
+      try {
+        iframeEl.contentWindow.postMessage(
+          { type: "DOOR_OPTIONS", options },
+          "*",
+        );
+        console.log("[DoorConfigurator] postMessage sent successfully");
+      } catch (error) {
+        console.error("[DoorConfigurator] Failed to send:", error);
+      }
     }
 
     function debouncedSend(reason) {
