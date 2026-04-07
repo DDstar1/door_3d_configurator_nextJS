@@ -1,100 +1,178 @@
 (function () {
-  const IFRAME_CLASS =
+  const TARGET_SELECTOR =
     ".woocommerce-product-gallery__wrapper .flickity-viewport";
-  const VISIBLE_OPTIONS_SELECTOR =
-    "#tm-extra-product-options-fields div.tc-container:not(.tc-hidden)";
 
-  const iframe = document.querySelector(IFRAME_CLASS);
-  if (!iframe) {
-    console.warn("[DoorConfigurator] Iframe Wrapper not found");
+  const target = document.querySelector(TARGET_SELECTOR);
+  if (!target) {
+    console.warn("[DoorConfigurator] Target not found");
     return;
   }
 
   console.log("[DoorConfigurator] script loaded");
 
-  // ── helpers ────────────────────────────────────────────────────────────────
+  // ── CREATE CONTAINER ─────────────────────────────────────────────
+  const wrapper = document.createElement("div");
+  wrapper.style.position = "relative";
 
-  function getLabel(container, productDescriptions) {
-    const labelSelectors = [".tc-epo-element-label-text", ".tc-label-text"];
-    for (const sel of labelSelectors) {
-      const el = container.querySelector(sel);
-      if (el) {
-        const text = el.innerText.trim();
-        if (text) return text.replace(/:$/, "").trim();
-      }
+  target.appendChild(wrapper);
+
+  // ── INJECT STYLES ────────────────────────────────────────────────
+  const style = document.createElement("style");
+  style.innerHTML = `
+    .door-toggle {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 999;
+      display: flex;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-family: sans-serif;
     }
-    const fallbackLabel = `Description${productDescriptions.length + 1}`;
-    productDescriptions.push({ label_text: fallbackLabel });
-    return fallbackLabel;
+
+    .door-toggle button,
+    .door-toggle a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+      background: white;
+      color: #555;
+      text-decoration: none;
+    }
+
+    .door-toggle button:hover,
+    .door-toggle a:hover {
+      background: #f3f4f6;
+    }
+
+    .door-toggle .active {
+      background: #7f1d1d;
+      color: white;
+    }
+  `;
+  document.head.appendChild(style);
+
+  // ── CREATE HTML ──────────────────────────────────────────────────
+  const toggle = document.createElement("div");
+  toggle.className = "door-toggle";
+
+  toggle.innerHTML = `
+    <button data-mode="2d" class="active">2D</button>
+    <button data-mode="3d">3D</button>
+    <a href="https://door-3d-configurator.vercel.app/paultec_alba/embed_alba_iframe" target="_blank">
+      Iframe
+    </a>
+  `;
+
+  wrapper.appendChild(toggle);
+
+  // ── FIND THE ACTUAL IFRAME ───────────────────────────────────────
+  // FIX: target is a DOM element, not an iframe. Find the real iframe inside it.
+  const iframeEl = target.querySelector("iframe");
+
+  // ── STATE ────────────────────────────────────────────────────────
+  let viewMode = "2d";
+
+  function updateUI() {
+    toggle.querySelectorAll("button").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.mode === viewMode);
+    });
   }
 
-  function getValue(container) {
-    const select = container.querySelector("select.tmcp-select");
-    if (select) {
-      const checked = select.querySelector("option:checked");
-      return checked ? checked.innerText.trim() : null;
-    }
-    const checkedInput = container.querySelector(
-      "input[type='radio']:checked, input[type='checkbox']:checked",
-    );
-    if (checkedInput) {
-      const labelEl = container.querySelector(".tc-label-text");
-      if (labelEl) return labelEl.innerText.trim();
-      return checkedInput.value || null;
-    }
-    const inputEl = container.querySelector(
-      "input[type='number'], input[type='text']",
-    );
-    if (inputEl) {
-      const min = inputEl.getAttribute("min") ?? "null";
-      const max = inputEl.getAttribute("max") ?? "null";
-      const val = inputEl.value ?? "null"; // .value for live value, not attribute
-      return `min_${min} | max_${max} | value_${val}`;
-    }
-    const descBlock = container.querySelector(".tm-description");
-    if (descBlock) {
-      const text = container.innerText.replace(/\s+/g, " ").trim();
-      return text || null;
-    }
-    return null;
-  }
+  // ── EVENTS ───────────────────────────────────────────────────────
+  toggle.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
 
-  // ── collect ────────────────────────────────────────────────────────────────
+    viewMode = btn.dataset.mode;
+    updateUI();
 
-  function collectOptions(iframeDoc) {
-    const containers = iframeDoc.querySelectorAll(VISIBLE_OPTIONS_SELECTOR);
-    const productDescriptions = [];
+    console.log("[DoorConfigurator] viewMode:", viewMode);
+
+    // FIX: Post to the iframe's contentWindow, not window itself
+    if (iframeEl && iframeEl.contentWindow) {
+      iframeEl.contentWindow.postMessage(
+        {
+          type: "VIEW_MODE_CHANGE",
+          mode: viewMode,
+        },
+        "*",
+      );
+    } else {
+      // Fallback: post to window if no iframe found
+      window.postMessage(
+        {
+          type: "VIEW_MODE_CHANGE",
+          mode: viewMode,
+        },
+        "*",
+      );
+    }
+  });
+
+  // ── COLLECT OPTIONS ───────────────────────────────────────────────
+  function collectOptions(doc) {
+    const containers = doc.querySelectorAll(
+      "#tm-extra-product-options-fields div.tc-container:not(.tc-hidden)",
+    );
     const result = {};
+
     containers.forEach((container) => {
-      const label = getLabel(container, productDescriptions);
-      const value = getValue(container);
+      const label =
+        container.querySelector(".tc-label-text")?.innerText.trim() ||
+        "Unknown";
+
+      const value =
+        container.querySelector("select")?.value ||
+        container.querySelector("input:checked")?.value ||
+        null;
+
       result[label] = value;
     });
+
     return result;
   }
 
-  // ── init: called once the iframe DOM is ready ──────────────────────────────
-
+  // ── INIT ──────────────────────────────────────────────────────────
   function init() {
-    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-    if (!iframeDoc || iframeDoc.readyState === "loading") {
-      iframe.addEventListener("load", init, { once: true });
+    if (!iframeEl) {
+      console.warn("[DoorConfigurator] No iframe found inside target");
       return;
     }
 
-    function update(source) {
-      const options = collectOptions(iframeDoc);
-      iframe._doorOptions = options;
-      window.parent.postMessage({ type: "DOOR_OPTIONS", options }, "*");
-      console.log(`[DoorConfigurator] ${source} →`, options);
-    }
-    update("initial");
+    const iframeDoc =
+      iframeEl.contentDocument || iframeEl.contentWindow?.document;
 
-    // Change / input events
-    iframeDoc.addEventListener("change", () => update("changed"));
+    if (!iframeDoc || iframeDoc.readyState === "loading") {
+      iframeEl.addEventListener("load", init, { once: true });
+      return;
+    }
+
+    function update(reason) {
+      console.log("[DoorConfigurator] update triggered:", reason);
+      const options = collectOptions(iframeDoc);
+
+      window.parent.postMessage(
+        {
+          type: "DOOR_OPTIONS",
+          options,
+        },
+        "*",
+      );
+    }
+
+    update("init");
+
+    iframeDoc.addEventListener("change", () => update("change"));
     iframeDoc.addEventListener("input", () => update("input"));
 
-    // DOM mutations (hidden toggles, injected containers)
+    // FIX: MutationObserver is now inside init(), where iframeDoc and update() are in scope
     const observer = new MutationObserver(() => update("DOM mutated"));
 
     observer.observe(iframeDoc.body, {
