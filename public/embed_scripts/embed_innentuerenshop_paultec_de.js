@@ -47,9 +47,9 @@
       }
 
     .door-toggle button:hover:not(.active),
-.door-toggle a:hover:not(.active) {
-  background: #fca5a5;
-}
+    .door-toggle a:hover:not(.active) {
+      background: #fca5a5;
+    }
       .door-toggle .active {
         background: #7f1d1d;
         color: white;
