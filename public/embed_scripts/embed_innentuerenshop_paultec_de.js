@@ -94,10 +94,7 @@
               2D
             </button>
 
-            <button data-mode="3d">
-        <span class="material-symbols-outlined">view_in_ar</span>
-              3D
-            </button>
+    
 
         <a href="${IFRAME_3D_URL}" target="_blank">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -242,6 +239,6 @@
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", main);
   } else {
-    main();
+    // main();
   }
 })();
