@@ -66,7 +66,7 @@ export default function AlbaCanva() {
         </Suspense>
         <Model />
       </Canvas>
-      <DoorConfigurationForm2 />
+      {/* <DoorConfigurationForm2 /> */}
     </div>
   );
 }

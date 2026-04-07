@@ -39,6 +39,15 @@ export function Model(props) {
   const rebate_edge_ref = useRef();
   const bboxHelperRef = useRef();
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const door = useDoorStore.getState().door; // ✅ read directly from store
+      console.log("Door state (every 3s, direct from store):", door);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   /* ===============================
      BASE MODEL DIMENSIONS (GLB SIZE)
   =============================== */
