@@ -33,7 +33,9 @@ Your job is to map each value to the closest matching value from the allowed DOO
 Rules:
 - Match case-insensitively and tolerate minor spelling differences or abbreviations.
 - If a value clearly corresponds to one of the allowed values, return that exact allowed value.
-- If no match can be found, return null for that key.
+- If the value contains numbers with units (e.g., "1985 mm") or ranges (e.g., "2000 - 2014 mm"), extract the number that best fits the allowed values.
+- If a value contains extra text or suffixes (like "_0"), ignore it for matching.
+- Always return values as strings (even if numeric), except null.
 - Return ONLY a valid JSON object. No markdown, no explanation, no extra text.
 - Keep the same keys from the input dictionary.
 
