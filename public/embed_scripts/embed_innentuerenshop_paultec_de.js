@@ -175,12 +175,12 @@
 
         // Ensure iframe is inside galleryWrapper
         if (iframeEl.parentElement !== galleryWrapper) {
-          galleryWrapper.appendChild(iframeEl);
+          galleryWrapper.prepend(iframeEl);
         }
 
-        // Move galleryWrapper back to its original parent if needed
+        // Move galleryWrapper back to its original parent as first child
         if (galleryWrapper.parentElement !== galleryWrapperParent) {
-          galleryWrapperParent.appendChild(galleryWrapper);
+          galleryWrapperParent.prepend(galleryWrapper);
         }
 
         if (!iframeLoaded) {
@@ -194,9 +194,9 @@
         galleryWrapper.classList.add("door-3d-active");
         galleryWrapper.classList.add(fullscreenWrapperClass);
 
-        // Move galleryWrapper directly under body
+        // Move galleryWrapper directly under body as first child
         if (galleryWrapper.parentElement !== document.body) {
-          document.body.appendChild(galleryWrapper);
+          document.body.prepend(galleryWrapper);
         }
 
         if (!iframeLoaded) {
@@ -212,12 +212,12 @@
 
         // Ensure iframe is inside galleryWrapper
         if (iframeEl.parentElement !== galleryWrapper) {
-          galleryWrapper.appendChild(iframeEl);
+          galleryWrapper.prepend(iframeEl);
         }
 
-        // Move galleryWrapper back to its original parent if needed
+        // Move galleryWrapper back to its original parent as first child
         if (galleryWrapper.parentElement !== galleryWrapperParent) {
-          galleryWrapperParent.appendChild(galleryWrapper);
+          galleryWrapperParent.prepend(galleryWrapper);
         }
       }
     }
