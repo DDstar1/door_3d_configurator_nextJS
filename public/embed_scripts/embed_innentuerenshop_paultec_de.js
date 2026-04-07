@@ -191,13 +191,13 @@
           debouncedSend("3D reopen");
         }
       } else if (viewMode === "3d_fullscreen") {
-        // Move galleryWrapper directly under body as first child
-        if (galleryWrapper.parentElement !== document.body) {
-          document.body.prepend(galleryWrapper);
-        }
+        const dupllicategalleryWrapper = galleryWrapper.cloneNode(true);
+        dupllicategalleryWrapper.classList.add(fullscreenWrapperClass);
+        document.body.appendChild(dupllicategalleryWrapper);
+
         // Fullscreen mode → hide the gallery itself
-        galleryWrapper.classList.add("door-3d-active");
-        galleryWrapper.classList.add(fullscreenWrapperClass);
+        dupllicategalleryWrapper.classList.add("door-3d-active");
+        dupllicategalleryWrapper.classList.add(fullscreenWrapperClass);
 
         // Hide gallery content so iframe is fullscreen
         //  galleryWrapper.style.visibility = "hidden";
