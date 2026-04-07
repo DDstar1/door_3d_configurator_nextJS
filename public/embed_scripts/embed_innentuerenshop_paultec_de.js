@@ -16,6 +16,12 @@
       document.head.appendChild(l);
     });
 
+    const fontLink = document.createElement("link");
+    fontLink.rel = "stylesheet";
+    fontLink.href =
+      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0";
+    document.head.appendChild(fontLink);
+
     const galleryWrapper = document.querySelector(GALLERY_WRAPPER_SELECTOR);
     if (!galleryWrapper) {
       console.warn("[DoorConfigurator] Gallery wrapper not found");
@@ -125,6 +131,8 @@
       });
 
       if (viewMode === "3d_fullscreen") {
+        console.log("[DoorConfigurator] Switching to 3D Fullscreen view");
+
         // Move galleryWrapper (with the real iframe inside) into overlay
         FULL_3D_SCREEN_WRAPPER.appendChild(galleryWrapper);
         FULL_3D_SCREEN_WRAPPER.style.display = "block";
@@ -132,6 +140,7 @@
         ensureIframeLoaded();
         if (iframeReady) debouncedSend("3D fullscreen open");
       } else if (viewMode === "3d") {
+        console.log("[DoorConfigurator] Switching to 3D view");
         // If coming from fullscreen, move galleryWrapper back first
         if (FULL_3D_SCREEN_WRAPPER.contains(galleryWrapper)) {
           // Re-insert before the overlay in DOM order
@@ -145,6 +154,8 @@
         ensureIframeLoaded();
         if (iframeReady) debouncedSend("3D open");
       } else {
+        console.log("[DoorConfigurator] Switching to 2D view");
+
         // 2D — restore gallery to original position if needed
         if (FULL_3D_SCREEN_WRAPPER.contains(galleryWrapper)) {
           FULL_3D_SCREEN_WRAPPER.before(galleryWrapper);
