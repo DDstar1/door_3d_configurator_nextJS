@@ -6,7 +6,7 @@
       "https://door-3d-configurator.vercel.app/paultec_alba/embed_alba_iframe";
 
     const links = [
-       "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0";
+      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0",
       "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=deployed_code",
       "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=image",
     ];
@@ -17,8 +17,6 @@
       fontLink.href = href;
       document.head.appendChild(fontLink);
     });
-
-
 
     const galleryWrapper = document.querySelector(GALLERY_WRAPPER_SELECTOR);
     if (!galleryWrapper) {
@@ -150,7 +148,7 @@
     });
 
     // ── UI UPDATE ───────────────────────────────────────────────────
-   function updateUI() {
+    function updateUI() {
       toggle.querySelectorAll("button").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.mode === viewMode);
       });
