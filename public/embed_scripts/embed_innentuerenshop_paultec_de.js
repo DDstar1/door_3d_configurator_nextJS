@@ -1,7 +1,6 @@
 (function DoorConfiguratorEmbed() {
   function main() {
     const GALLERY_WRAPPER_SELECTOR = ".product-images";
-    const GALLERY_WRAPPER_PARENT_SELECTOR = ".is-sticky-column__inner";
     const OPTIONS_SELECTOR = "#tm-extra-product-options-fields";
     const IFRAME_3D_URL =
       "https://door-3d-configurator.vercel.app/paultec_alba/embed_alba_iframe";
@@ -18,16 +17,7 @@
       document.head.appendChild(fontLink);
     });
 
-    const fontLink = document.createElement("link");
-    fontLink.rel = "stylesheet";
-    fontLink.href =
-      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0";
-    document.head.appendChild(fontLink);
-
     const galleryWrapper = document.querySelector(GALLERY_WRAPPER_SELECTOR);
-    const galleryWrapperParent = document.querySelector(
-      GALLERY_WRAPPER_PARENT_SELECTOR,
-    );
     if (!galleryWrapper) {
       console.warn("[DoorConfigurator] Gallery wrapper not found");
       return;
@@ -52,8 +42,7 @@
         height: 40px;
       }
 
-      .door-toggle button
-      {
+      .door-toggle button {
         display: flex;
         align-items: center;
         gap: 6px;
@@ -67,7 +56,7 @@
         height: 100%;
       }
 
-      .door-toggle button:hover:not(.active){
+      .door-toggle button:hover:not(.active) {
         background: #fca5a5;
       }
 
@@ -95,7 +84,7 @@
         display: block;
       }
 
-           /* 3D fullscreen mode expands container and shows iframe */
+      /* 3D fullscreen mode */
       .door-3d-fullscreen {
         position: fixed !important;
         top: 0 !important;
@@ -103,13 +92,20 @@
         width: 100vw !important;
         height: 100vh !important;
         z-index: 10000000000000 !important;
-        background: #fff;
+        background: #000;
         overflow: hidden;
       }
+      
       .door-3d-fullscreen #door-3d-iframe {
         display: block;
         width: 100%;
         height: 100%;
+      }
+      
+      /* Hide original gallery content when in fullscreen */
+      body.door-fullscreen-active .product-images:not(.door-3d-fullscreen) {
+        visibility: hidden;
+        opacity: 0;
       }
     `;
 
@@ -126,14 +122,12 @@
         <span class="material-symbols-outlined">image</span>
         2D
       </button>
-
       <button data-mode="3d">
-      <span class="material-symbols-outlined">deployed_code</span>
+        <span class="material-symbols-outlined">deployed_code</span>
         3D
       </button>
-
       <button data-mode="3d_fullscreen">
-        <span class="material-symbols-outlined">view_in_ar</span> Iframe
+        <span class="material-symbols-outlined">view_in_ar</span> Fullscreen
       </button>
     `;
     galleryWrapper.appendChild(toggle);
@@ -143,10 +137,16 @@
     iframeEl.setAttribute("allowfullscreen", "true");
     galleryWrapper.appendChild(iframeEl);
 
+    // Create fullscreen container (initially empty)
+    const fullscreenContainer = document.createElement("div");
+    fullscreenContainer.classList.add("door-3d-fullscreen");
+    fullscreenContainer.style.display = "none";
+    document.body.appendChild(fullscreenContainer);
+
     // ── STATE ───────────────────────────────────────────────────────
     let viewMode = "2d";
     let iframeLoaded = false;
-    let iframeReady = false; // 🔥 NEW
+    let iframeReady = false;
     let lastOptions = null;
     let debounceTimer = null;
 
@@ -159,81 +159,89 @@
       }
     });
 
+    // ── HELPER: Move iframe between containers ──────────────────────
+    function moveIframeTo(container) {
+      if (iframeEl.parentNode === container) return;
+      iframeEl.remove();
+      container.appendChild(iframeEl);
+    }
+
     // ── UI UPDATE ───────────────────────────────────────────────────
     function updateUI() {
-      const FULLSCREEN_CLASS = "door-3d-fullscreen";
-      const existingFullscreen = document.querySelector(`.${FULLSCREEN_CLASS}`);
-
       // Update toggle button states
       toggle.querySelectorAll("button").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.mode === viewMode);
       });
 
       if (viewMode === "3d_fullscreen") {
-        // Remove existing fullscreen if any
-        if (existingFullscreen) {
-          existingFullscreen.remove();
-        }
+        // Hide original gallery wrapper content visually
+        galleryWrapper.classList.remove("door-3d-active");
 
-        // Clone the gallery wrapper for fullscreen
-        const fullscreenWrapper = galleryWrapper.cloneNode(true);
-        fullscreenWrapper.classList.add(FULLSCREEN_CLASS);
-        fullscreenWrapper.classList.add("door-3d-active");
+        // Move iframe to fullscreen container
+        moveIframeTo(fullscreenContainer);
 
-        // Get the iframe inside the clone and set its src if needed
-        const cloneIframe = fullscreenWrapper.querySelector("#door-3d-iframe");
-        if (cloneIframe && !iframeLoaded) {
-          cloneIframe.src = IFRAME_3D_URL;
+        // Show fullscreen container
+        fullscreenContainer.style.display = "block";
+        fullscreenContainer.classList.add("door-3d-active");
+
+        // Add class to body to hide original gallery
+        document.body.classList.add("door-fullscreen-active");
+
+        // Load iframe if not loaded
+        if (!iframeLoaded) {
+          iframeEl.src = IFRAME_3D_URL;
           iframeLoaded = true;
-        }
-
-        document.body.appendChild(fullscreenWrapper);
-
-        // Hide original gallery content
-        galleryWrapper.style.opacity = "0";
-        galleryWrapper.style.pointerEvents = "none";
-
-        // Update reference to the active iframe for messaging
-        const activeIframe = fullscreenWrapper.querySelector("#door-3d-iframe");
-        if (activeIframe && iframeReady) {
-          activeIframe.contentWindow?.postMessage(
-            { type: "VIEW_MODE_CHANGE", mode: viewMode },
+        } else if (iframeReady) {
+          debouncedSend("3D fullscreen reopen");
+          // Notify iframe about mode change
+          iframeEl.contentWindow?.postMessage(
+            { type: "VIEW_MODE_CHANGE", mode: "3d_fullscreen" },
             "*",
           );
-          debouncedSend("3D fullscreen reopen");
         }
       } else if (viewMode === "3d") {
-        // Remove fullscreen if exists
-        if (existingFullscreen) {
-          existingFullscreen.remove();
-        }
+        // Hide fullscreen container
+        fullscreenContainer.style.display = "none";
+        fullscreenContainer.classList.remove("door-3d-active");
 
-        // Restore original gallery visibility
-        galleryWrapper.style.opacity = "";
-        galleryWrapper.style.pointerEvents = "";
+        // Remove body class
+        document.body.classList.remove("door-fullscreen-active");
+
+        // Move iframe back to gallery wrapper
+        moveIframeTo(galleryWrapper);
+
+        // Show 3D mode in gallery
         galleryWrapper.classList.add("door-3d-active");
-        galleryWrapper.classList.remove(FULLSCREEN_CLASS);
 
+        // Load iframe if not loaded
         if (!iframeLoaded) {
           iframeEl.src = IFRAME_3D_URL;
           iframeLoaded = true;
         } else if (iframeReady) {
           debouncedSend("3D reopen");
+          // Notify iframe about mode change
+          iframeEl.contentWindow?.postMessage(
+            { type: "VIEW_MODE_CHANGE", mode: "3d" },
+            "*",
+          );
         }
       } else {
         // 2D mode
-        // Remove fullscreen if exists
-        if (existingFullscreen) {
-          existingFullscreen.remove();
-        }
+        // Hide fullscreen container
+        fullscreenContainer.style.display = "none";
+        fullscreenContainer.classList.remove("door-3d-active");
 
-        // Restore original gallery
-        galleryWrapper.style.opacity = "";
-        galleryWrapper.style.pointerEvents = "";
+        // Remove body class
+        document.body.classList.remove("door-fullscreen-active");
+
+        // Move iframe back to gallery wrapper (but keep it hidden)
+        moveIframeTo(galleryWrapper);
+
+        // Remove 3D active class to hide iframe
         galleryWrapper.classList.remove("door-3d-active");
-        galleryWrapper.classList.remove(FULLSCREEN_CLASS);
       }
     }
+
     // ── TOGGLE CLICK ────────────────────────────────────────────────
     toggle.addEventListener("click", (e) => {
       const btn = e.target.closest("button");
@@ -243,12 +251,13 @@
       updateUI();
 
       console.log("[DoorConfigurator] viewMode:", viewMode);
+    });
 
-      if (iframeLoaded && iframeEl.contentWindow) {
-        iframeEl.contentWindow.postMessage(
-          { type: "VIEW_MODE_CHANGE", mode: viewMode },
-          "*",
-        );
+    // Handle escape key to exit fullscreen
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && viewMode === "3d_fullscreen") {
+        viewMode = "3d";
+        updateUI();
       }
     });
 
@@ -280,7 +289,13 @@
 
     // ── SEND OPTIONS ────────────────────────────────────────────────
     function sendOptions(reason) {
-      if (!iframeLoaded || !iframeReady || !iframeEl.contentWindow) return;
+      if (!iframeLoaded || !iframeReady || !iframeEl.contentWindow) {
+        console.log("[DoorConfigurator] Cannot send - not ready", {
+          iframeLoaded,
+          iframeReady,
+        });
+        return;
+      }
 
       const options = collectOptions();
       const serialised = JSON.stringify(options);
@@ -320,6 +335,9 @@
         attributeFilter: ["class", "style"],
       });
     }
+
+    // Initial setup
+    updateUI();
   }
 
   if (document.readyState === "loading") {
