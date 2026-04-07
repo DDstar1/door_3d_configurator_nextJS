@@ -6,17 +6,16 @@ import {
   GizmoViewport,
   Environment,
 } from "@react-three/drei";
-import { useEffect, useRef, Suspense } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { Model } from "./Alba_model";
 import { useDoorStore } from "@/store/door_store";
 import { mapDoorOptions } from "@/utils/3d_utils/3d_AI_mapDoorOptions";
-import { DoorConfigurationForm2 } from "@/components/doorpage/door_form/Total_door_form";
 
 export default function AlbaCanva() {
   const setDoorField = useDoorStore((state) => state.setDoorField);
 
-  // Debounce ref — avoids hammering Groq on every keystroke
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function handleMessage(event: MessageEvent) {
@@ -25,18 +24,24 @@ export default function AlbaCanva() {
       const rawDict: Record<string, string | null> = event.data.options;
       console.log("[AlbaCanva] raw options received →", rawDict);
 
-      // Debounce: wait 600 ms of silence before calling Groq
       if (debounceTimer.current) clearTimeout(debounceTimer.current);
 
       debounceTimer.current = setTimeout(async () => {
-        const mapped = await mapDoorOptions(rawDict);
+        try {
+          setIsLoading(true); // 🔴 start spinner
 
-        // Push every matched value into the Zustand store
-        Object.entries(mapped).forEach(([key, value]) => {
-          if (value !== null) {
-            setDoorField(key as any, value as any);
-          }
-        });
+          const mapped = await mapDoorOptions(rawDict);
+
+          Object.entries(mapped).forEach(([key, value]) => {
+            if (value !== null) {
+              setDoorField(key as any, value as any);
+            }
+          });
+        } catch (err) {
+          console.error("Mapping failed:", err);
+        } finally {
+          setIsLoading(false); // 🔴 stop spinner
+        }
       }, 600);
     }
 
@@ -48,7 +53,7 @@ export default function AlbaCanva() {
   }, [setDoorField]);
 
   return (
-    <div className="flex flex-col w-full h-screen">
+    <div className="relative flex flex-col w-full h-screen">
       <Canvas
         shadows
         camera={{ position: [0, 1, 2] }}
@@ -57,16 +62,36 @@ export default function AlbaCanva() {
         <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
           <GizmoViewport />
         </GizmoHelper>
+
         <axesHelper args={[10]} />
         <gridHelper args={[40, 20, "red", 0x55ccff]} />
         <OrbitControls target={[0, 1, 0]} enablePan={true} />
         <directionalLight intensity={2} position={[2, 5, 1]} />
+
         <Suspense fallback={null}>
           <Environment preset="city" />
         </Suspense>
+
         <Model />
       </Canvas>
-      {/* <DoorConfigurationForm2 /> */}
+
+      {/* 🔴 Red Transparent Spinner Overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50 transition-opacity duration-300">
+          <div className="flex flex-col items-center">
+            {/* Spinner */}
+            <div className="w-14 h-14 border-4 border-red-500/80 border-t-transparent rounded-full animate-spin" />
+
+            {/* Glow ring */}
+            <div className="absolute w-20 h-20 rounded-full bg-red-500/20 blur-xl animate-pulse" />
+
+            {/* Text */}
+            <p className="text-red-400 mt-4 text-sm tracking-wide">
+              Mapping options...
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
