@@ -169,6 +169,14 @@
       const fullscreenWrapperClass = "door-3d-fullscreen";
 
       if (viewMode === "3d") {
+        // Move iframe back to galleryWrapper if it was in fullscreen
+        const existingFullscreen = document.querySelector(
+          `.${fullscreenWrapperClass}`,
+        );
+        if (existingFullscreen) {
+          existingFullscreen.remove();
+        }
+
         // Normal 3D view inside gallery
         galleryWrapper.classList.add("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
@@ -183,6 +191,10 @@
           debouncedSend("3D reopen");
         }
       } else if (viewMode === "3d_fullscreen") {
+        // Move galleryWrapper directly under body as first child
+        if (galleryWrapper.parentElement !== document.body) {
+          document.body.prepend(galleryWrapper);
+        }
         // Fullscreen mode → hide the gallery itself
         galleryWrapper.classList.add("door-3d-active");
         galleryWrapper.classList.add(fullscreenWrapperClass);
@@ -197,6 +209,13 @@
           debouncedSend("3D fullscreen reopen");
         }
       } else {
+        // Move iframe back to galleryWrapper if it was in fullscreen
+        const existingFullscreen = document.querySelector(
+          `.${fullscreenWrapperClass}`,
+        );
+        if (existingFullscreen) {
+          existingFullscreen.remove();
+        }
         // 2D mode
         galleryWrapper.classList.remove("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
