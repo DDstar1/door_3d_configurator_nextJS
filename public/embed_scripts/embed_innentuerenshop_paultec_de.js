@@ -17,6 +17,12 @@
       document.head.appendChild(fontLink);
     });
 
+    const fontLink = document.createElement("link");
+    fontLink.rel = "stylesheet";
+    fontLink.href =
+      "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0";
+    document.head.appendChild(fontLink);
+
     const galleryWrapper = document.querySelector(GALLERY_WRAPPER_SELECTOR);
     if (!galleryWrapper) {
       console.warn("[DoorConfigurator] Gallery wrapper not found");
