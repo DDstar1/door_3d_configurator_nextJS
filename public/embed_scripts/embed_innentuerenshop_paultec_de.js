@@ -161,28 +161,58 @@
 
     // ── UI UPDATE ───────────────────────────────────────────────────
     function updateUI() {
+      const FULLSCREEN_CLASS = "door-3d-fullscreen";
+      const existingFullscreen = document.querySelector(`.${FULLSCREEN_CLASS}`);
+
       // Update toggle button states
       toggle.querySelectorAll("button").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.mode === viewMode);
       });
 
-      const fullscreenWrapperClass = "door-3d-fullscreen";
-
-      if (viewMode === "3d") {
-        // Move iframe back to galleryWrapper if it was in fullscreen
-        const existingFullscreen = document.querySelector(
-          `.${fullscreenWrapperClass}`,
-        );
+      if (viewMode === "3d_fullscreen") {
+        // Remove existing fullscreen if any
         if (existingFullscreen) {
           existingFullscreen.remove();
         }
 
-        // Normal 3D view inside gallery
-        galleryWrapper.classList.add("door-3d-active");
-        galleryWrapper.classList.remove(fullscreenWrapperClass);
+        // Clone the gallery wrapper for fullscreen
+        const fullscreenWrapper = galleryWrapper.cloneNode(true);
+        fullscreenWrapper.classList.add(FULLSCREEN_CLASS);
+        fullscreenWrapper.classList.add("door-3d-active");
 
-        // Show the gallery
-        galleryWrapper.style.visibility = "visible";
+        // Get the iframe inside the clone and set its src if needed
+        const cloneIframe = fullscreenWrapper.querySelector("#door-3d-iframe");
+        if (cloneIframe && !iframeLoaded) {
+          cloneIframe.src = IFRAME_3D_URL;
+          iframeLoaded = true;
+        }
+
+        document.body.appendChild(fullscreenWrapper);
+
+        // Hide original gallery content
+        galleryWrapper.style.opacity = "0";
+        galleryWrapper.style.pointerEvents = "none";
+
+        // Update reference to the active iframe for messaging
+        const activeIframe = fullscreenWrapper.querySelector("#door-3d-iframe");
+        if (activeIframe && iframeReady) {
+          activeIframe.contentWindow?.postMessage(
+            { type: "VIEW_MODE_CHANGE", mode: viewMode },
+            "*",
+          );
+          debouncedSend("3D fullscreen reopen");
+        }
+      } else if (viewMode === "3d") {
+        // Remove fullscreen if exists
+        if (existingFullscreen) {
+          existingFullscreen.remove();
+        }
+
+        // Restore original gallery visibility
+        galleryWrapper.style.opacity = "";
+        galleryWrapper.style.pointerEvents = "";
+        galleryWrapper.classList.add("door-3d-active");
+        galleryWrapper.classList.remove(FULLSCREEN_CLASS);
 
         if (!iframeLoaded) {
           iframeEl.src = IFRAME_3D_URL;
@@ -190,38 +220,18 @@
         } else if (iframeReady) {
           debouncedSend("3D reopen");
         }
-      } else if (viewMode === "3d_fullscreen") {
-        const dupllicategalleryWrapper = galleryWrapper.cloneNode(true);
-        dupllicategalleryWrapper.classList.add(fullscreenWrapperClass);
-        document.body.appendChild(dupllicategalleryWrapper);
-
-        // Fullscreen mode → hide the gallery itself
-        dupllicategalleryWrapper.classList.add("door-3d-active");
-        dupllicategalleryWrapper.classList.add(fullscreenWrapperClass);
-
-        // Hide gallery content so iframe is fullscreen
-        //  galleryWrapper.style.visibility = "hidden";
-
-        if (!iframeLoaded) {
-          iframeEl.src = IFRAME_3D_URL;
-          iframeLoaded = true;
-        } else if (iframeReady) {
-          debouncedSend("3D fullscreen reopen");
-        }
       } else {
-        // Move iframe back to galleryWrapper if it was in fullscreen
-        const existingFullscreen = document.querySelector(
-          `.${fullscreenWrapperClass}`,
-        );
+        // 2D mode
+        // Remove fullscreen if exists
         if (existingFullscreen) {
           existingFullscreen.remove();
         }
-        // 2D mode
-        galleryWrapper.classList.remove("door-3d-active");
-        galleryWrapper.classList.remove(fullscreenWrapperClass);
 
-        // Make sure gallery is visible again
-        galleryWrapper.style.visibility = "visible";
+        // Restore original gallery
+        galleryWrapper.style.opacity = "";
+        galleryWrapper.style.pointerEvents = "";
+        galleryWrapper.classList.remove("door-3d-active");
+        galleryWrapper.classList.remove(FULLSCREEN_CLASS);
       }
     }
     // ── TOGGLE CLICK ────────────────────────────────────────────────
