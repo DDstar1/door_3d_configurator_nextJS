@@ -99,7 +99,7 @@
         left: 0 !important;
         width: 100vw !important;
         height: 100vh !important;
-        z-index: 9999 !important;
+        z-index: 10000000000000 !important;
         background: #fff;
         overflow: hidden;
       }
