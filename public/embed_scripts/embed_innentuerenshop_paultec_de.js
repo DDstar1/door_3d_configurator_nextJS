@@ -119,7 +119,7 @@
     toggle.className = "door-toggle";
 
     toggle.innerHTML = `
-  <button data-mode="2d" class="active">
+      <button data-mode="2d" class="active">
         <span class="material-symbols-outlined">image</span>
         2D
       </button>
@@ -158,34 +158,77 @@
 
     // ── UI UPDATE ───────────────────────────────────────────────────
     function updateUI() {
+      // Update toggle button states
       toggle.querySelectorAll("button").forEach((btn) => {
         btn.classList.toggle("active", btn.dataset.mode === viewMode);
       });
 
+      const fullscreenWrapperClass = "door-3d-fullscreen";
+
       if (viewMode === "3d") {
+        // Normal 3D view inside gallery
         galleryWrapper.classList.add("door-3d-active");
+        galleryWrapper.classList.remove(fullscreenWrapperClass);
+
+        // Move iframe back to galleryWrapper if it was in fullscreen
+        const existingFullscreen = document.querySelector(
+          `.${fullscreenWrapperClass}`,
+        );
+        if (existingFullscreen) {
+          galleryWrapper.appendChild(iframeEl);
+          existingFullscreen.remove();
+        }
 
         if (!iframeLoaded) {
           iframeEl.src = IFRAME_3D_URL;
           iframeLoaded = true;
         } else if (iframeReady) {
-          // Already ready → send immediately
           debouncedSend("3D reopen");
         }
       } else if (viewMode === "3d_fullscreen") {
+        // Fullscreen mode
         galleryWrapper.classList.add("door-3d-active");
-        galleryWrapper.classList.add("door-3d-fullscreen");
+
+        // Create fullscreen wrapper if it doesn't exist
+        let fullscreenWrapper = document.querySelector(
+          `.${fullscreenWrapperClass}`,
+        );
+        if (!fullscreenWrapper) {
+          fullscreenWrapper = document.createElement("div");
+          fullscreenWrapper.className = fullscreenWrapperClass;
+          fullscreenWrapper.style.position = "fixed";
+          fullscreenWrapper.style.top = "0";
+          fullscreenWrapper.style.left = "0";
+          fullscreenWrapper.style.width = "100vw";
+          fullscreenWrapper.style.height = "100vh";
+          fullscreenWrapper.style.zIndex = "100000";
+          fullscreenWrapper.style.background = "#fff";
+          fullscreenWrapper.style.overflow = "hidden";
+          document.body.appendChild(fullscreenWrapper);
+        }
+
+        // Move iframe into fullscreen wrapper
+        fullscreenWrapper.appendChild(iframeEl);
 
         if (!iframeLoaded) {
           iframeEl.src = IFRAME_3D_URL;
           iframeLoaded = true;
         } else if (iframeReady) {
-          // Already ready → send immediately
-          debouncedSend("3D reopen");
+          debouncedSend("3D fullscreen reopen");
         }
       } else {
+        // 2D mode
         galleryWrapper.classList.remove("door-3d-active");
-        galleryWrapper.classList.remove("door-3d-fullscreen");
+        galleryWrapper.classList.remove(fullscreenWrapperClass);
+
+        // Move iframe back to galleryWrapper if it was in fullscreen
+        const existingFullscreen = document.querySelector(
+          `.${fullscreenWrapperClass}`,
+        );
+        if (existingFullscreen) {
+          galleryWrapper.appendChild(iframeEl);
+          existingFullscreen.remove();
+        }
       }
     }
 
