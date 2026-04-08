@@ -132,7 +132,7 @@
         3D
       </button>
       <button data-mode="3d_fullscreen">
-        <span class="material-symbols-outlined">view_in_ar</span> Iframe
+        <span class="material-symbols-outlined">view_in_ar</span>Maximized
       </button>
     `;
     galleryWrapper.appendChild(toggle);
