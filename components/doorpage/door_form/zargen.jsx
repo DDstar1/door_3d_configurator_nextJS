@@ -1,7 +1,7 @@
 "use client";
 
 import { useDoorStore } from "@/store/door_store";
-import { DOOR_VALUES } from "@/utils/door_config";
+import { DOOR_VALUES, DOOR_KEYS } from "@/utils/door_config";
 
 export default function ZargenTab() {
   const zarge = useDoorStore((s) => s.door.zarge_store);
@@ -27,7 +27,7 @@ export default function ZargenTab() {
         <label className="block mb-1 font-medium text-black">Zargen</label>
         <select
           value={zarge}
-          onChange={(e) => setDoorField("zarge", e.target.value)}
+          onChange={(e) => setDoorField(DOOR_KEYS.zarge_store, e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
           <option value={ZARGEN_OPTIONS.OHNE_ZARGEN}>ohne Zarge</option>
@@ -45,7 +45,7 @@ export default function ZargenTab() {
             </label>
             <select
               value={bekleidung}
-              onChange={(e) => setDoorField("bekleidung", e.target.value)}
+              onChange={(e) => setDoorField(DOOR_KEYS.bekleidung_store, e.target.value)}
               className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
             >
               <option value="62,5 mm">62,5 mm</option>
@@ -61,7 +61,7 @@ export default function ZargenTab() {
             </label>
             <select
               value={wandstaerke}
-              onChange={(e) => setDoorField("wandstaerke", e.target.value)}
+              onChange={(e) => setDoorField(DOOR_KEYS.wandstaerke_store, e.target.value)}
               className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
             >
               {wandOptions.map((option) => (

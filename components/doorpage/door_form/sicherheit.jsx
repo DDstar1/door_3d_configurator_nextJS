@@ -1,5 +1,5 @@
 import { useDoorStore } from "@/store/door_store";
-import { DOOR_VALUES } from "@/utils/door_config";
+import { DOOR_VALUES, DOOR_KEYS } from "@/utils/door_config";
 
 export default function SicherheitTab() {
   const schloss = useDoorStore((s) => s.door.schloss_store);
@@ -21,7 +21,7 @@ export default function SicherheitTab() {
         </label>
         <select
           value={schloss}
-          onChange={(e) => setDoorField("schloss", e.target.value)}
+          onChange={(e) => setDoorField(DOOR_KEYS.schloss_store, e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
           <option value={LOCK_OPTIONS.OHNE}>Ohne</option>
@@ -45,7 +45,7 @@ export default function SicherheitTab() {
         <label className="block mb-1 font-medium text-black">Bänder</label>
         <select
           value={band}
-          onChange={(e) => setDoorField("band", e.target.value)}
+          onChange={(e) => setDoorField(DOOR_KEYS.band_store, e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
           {/* Only for Stumpf */}
@@ -106,7 +106,7 @@ export default function SicherheitTab() {
         </label>
         <select
           value={schliessblech}
-          onChange={(e) => setDoorField("schliessblech", e.target.value)}
+          onChange={(e) => setDoorField(DOOR_KEYS.schliessblech_store, e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
           <option value={SCHLIESSBLECHE_OPTIONS.NR_418_EDELSTAHL}>

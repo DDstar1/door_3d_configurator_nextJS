@@ -1,5 +1,5 @@
 import { useDoorStore } from "@/store/door_store";
-import { DOOR_VALUES } from "@/utils/door_config";
+import { DOOR_VALUES, DOOR_KEYS } from "@/utils/door_config";
 
 export default function ExtrasTab() {
   const lueftung = useDoorStore((s) => s.door.lueftung_store);
@@ -20,7 +20,9 @@ export default function ExtrasTab() {
         </label>
         <select
           value={lueftung}
-          onChange={(e) => setDoorField("lueftung", e.target.value)}
+          onChange={(e) =>
+            setDoorField(DOOR_KEYS.lueftung_store, e.target.value)
+          }
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
           <option value={LUEFTUNGSBOHRUNG.OHNE_KERNLOCHBOHRUNG}>
@@ -39,7 +41,7 @@ export default function ExtrasTab() {
         </label>
         <select
           value={boden}
-          onChange={(e) => setDoorField("boden", e.target.value)}
+          onChange={(e) => setDoorField(DOOR_KEYS.boden_store, e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
           <option value={BODENDICHTUNG.OHNE_BODENDICHTUNG}>
@@ -58,7 +60,7 @@ export default function ExtrasTab() {
         </label>
         <select
           value={lichtoeffnung}
-          onChange={(e) => setDoorField("lichtoeffnung", e.target.value)}
+          onChange={(e) => setDoorField(DOOR_KEYS.lichtoeffnung_store, e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
           <option value="Norm-LÖ 1011 V003">Norm-LÖ 1011 V003</option>
@@ -70,7 +72,7 @@ export default function ExtrasTab() {
         <label className="block mb-1 font-medium text-black">Verglasung</label>
         <select
           value={verglasung}
-          onChange={(e) => setDoorField("verglasung", e.target.value)}
+          onChange={(e) => setDoorField(DOOR_KEYS.verglasung_store, e.target.value)}
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
           <option value={VERGLASUNG_OPTIONS.OHNE_VERGLASUNG}>

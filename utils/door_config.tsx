@@ -93,4 +93,9 @@ const INITIAL_DOOR_STATE = {
   wandstaerke_store: "80 mm (77 - 97 mm)",
 } as const;
 
-export { DOOR_VALUES, INITIAL_DOOR_STATE };
+// Typed key map — use DOOR_KEYS.lueftung_store instead of hardcoding "lueftung_store"
+const DOOR_KEYS = Object.fromEntries(
+  Object.keys(INITIAL_DOOR_STATE).map((k) => [k, k]),
+) as { [K in keyof typeof INITIAL_DOOR_STATE]: K };
+
+export { DOOR_VALUES, INITIAL_DOOR_STATE, DOOR_KEYS };

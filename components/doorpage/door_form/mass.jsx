@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDoorStore } from "@/store/door_store";
+import { DOOR_KEYS } from "@/utils/door_config";
 
 export default function MassTab() {
   // Subscribe to width and height in the store
@@ -28,7 +29,7 @@ export default function MassTab() {
           onChange={(e) => setTempWidth(e.target.value)}
           onBlur={() =>
             setDoorField(
-              "width",
+              DOOR_KEYS.width_store,
               Math.min(1800, Math.max(600, Number(tempWidth))),
             )
           }
@@ -47,7 +48,7 @@ export default function MassTab() {
           onChange={(e) => setTempHeight(e.target.value)}
           onBlur={() =>
             setDoorField(
-              "height",
+              DOOR_KEYS.height_store,
               Math.min(2400, Math.max(1900, Number(tempHeight))),
             )
           }
