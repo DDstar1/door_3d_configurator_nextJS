@@ -183,6 +183,11 @@
       const fullscreenWrapperClass = "door-3d-fullscreen";
 
       if (viewMode === "3d") {
+        // Lock height to the current rendered size so the abs-positioned iframe
+        // has a containing-block height to fill instead of expanding the page.
+        galleryWrapper.style.height =
+          galleryWrapper.getBoundingClientRect().height + "px";
+
         galleryWrapper.classList.add("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
 
@@ -231,7 +236,8 @@
           debouncedSend("Screen_Change 3D fullscreen reopen");
         }
       } else {
-        // 2D mode
+        // 2D mode — release the locked height so the gallery resizes naturally
+        galleryWrapper.style.height = "";
         galleryWrapper.classList.remove("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
 
