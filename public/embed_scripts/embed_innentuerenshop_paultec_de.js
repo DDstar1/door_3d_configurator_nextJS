@@ -236,10 +236,14 @@
           debouncedSend("Screen_Change 3D fullscreen reopen");
         }
       } else {
-        // 2D mode — release the locked height so the gallery resizes naturally
-        galleryWrapper.style.height = "";
-        galleryWrapper.classList.remove("door-3d-active");
+        // 2D or 3D mode
+        if (viewMode === "3d") {
+          galleryWrapper.classList.add("door-3d-active");
+        } else {
+          galleryWrapper.classList.remove("door-3d-active");
+        }
         galleryWrapper.classList.remove(fullscreenWrapperClass);
+        galleryWrapper.style.height = ""; // Reset height after exiting fullscreen
 
         if (iframeEl.parentElement !== galleryWrapper) {
           moveElementBefore(
@@ -256,6 +260,15 @@
             galleryWrapper,
             galleryWrapperParent.firstChild,
           );
+        }
+
+        if (viewMode === "3d") {
+          if (!iframeLoaded) {
+            iframeEl.src = IFRAME_3D_URL;
+            iframeLoaded = true;
+          } else if (iframeReady) {
+            debouncedSend("Screen_Change 3D reopen");
+          }
         }
       }
     }
