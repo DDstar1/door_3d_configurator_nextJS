@@ -183,14 +183,6 @@
       const fullscreenWrapperClass = "door-3d-fullscreen";
 
       if (viewMode === "3d") {
-        // On mobile the gallery height is often 0 or auto — use the wrapper
-        // width instead so the 3D view gets a square frame matching the mobile
-        // image layout. On desktop, keep the rendered height.
-        const rect = galleryWrapper.getBoundingClientRect();
-        const isMobile = window.innerWidth < 768;
-        const lockedHeight = isMobile ? rect.width : (rect.height || rect.width);
-        galleryWrapper.style.height = lockedHeight + "px";
-
         galleryWrapper.classList.add("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
 
@@ -246,7 +238,6 @@
           galleryWrapper.classList.remove("door-3d-active");
         }
         galleryWrapper.classList.remove(fullscreenWrapperClass);
-        galleryWrapper.style.height = ""; // Reset height after exiting fullscreen
 
         if (iframeEl.parentElement !== galleryWrapper) {
           moveElementBefore(
