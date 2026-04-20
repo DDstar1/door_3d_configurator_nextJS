@@ -5,8 +5,10 @@ Command: npx gltfjsx@6.5.3 door_model.glb
 
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useGLTF, useHelper, useTexture } from "@react-three/drei";
+import { useLoader } from "@react-three/fiber";
 import { Geometry, Base, Subtraction } from "@react-three/csg";
 import * as THREE from "three";
+import { EXRLoader } from "three/addons/loaders/EXRLoader.js";
 import { useDoorStore } from "@/store/door_store";
 import { DOOR_VALUES } from "@/utils/door_config";
 import {
@@ -60,16 +62,45 @@ export function Model(props) {
   const hardwareMat = useMaterial(getHardwareColour(schloss));
   const BandMat = useMaterial(getHardwareColour(band));
 
-  const wallTextures = useTexture({
-    map: "/textures/round-pattern-wall/round-pattern-wallpaper1_albedo.png",
-    aoMap: "/textures/round-pattern-wall/round-pattern-wallpaper1_ao.png",
-    metalnessMap:
-      "/textures/round-pattern-wall/round-pattern-wallpaper1_metallic.png",
-    normalMap:
-      "/textures/round-pattern-wall/round-pattern-wallpaper1_normal-ogl.png",
-    roughnessMap:
-      "/textures/round-pattern-wall/round-pattern-wallpaper1_roughness.png",
-  });
+  const wallTextures = useTexture(
+    {
+      map: "/textures/round-pattern-wall_texture/round-pattern-wallpaper1_albedo.png",
+      aoMap:
+        "/textures/round-pattern-wall_texture/round-pattern-wallpaper1_ao.png",
+      metalnessMap:
+        "/textures/round-pattern-wall_texture/round-pattern-wallpaper1_metallic.png",
+      normalMap:
+        "/textures/round-pattern-wall_texture/round-pattern-wallpaper1_normal-ogl.png",
+      roughnessMap:
+        "/textures/round-pattern-wall_texture/round-pattern-wallpaper1_roughness.png",
+    },
+    (textures) => {
+      Object.values(textures).forEach((t) => {
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.needsUpdate = true;
+      });
+    },
+  );
+
+  const [floorDiff, floorDisp] = useTexture([
+    "/textures/plank_flooring_textures/plank_flooring_04_diff_4k.jpg",
+    "/textures/plank_flooring_textures/plank_flooring_04_disp_4k.png",
+  ]);
+  const floorNor = useLoader(
+    EXRLoader,
+    "/textures/plank_flooring_textures/plank_flooring_04_nor_gl_4k.exr",
+  );
+  const floorRough = useLoader(
+    EXRLoader,
+    "/textures/plank_flooring_textures/plank_flooring_04_rough_4k.exr",
+  );
+  useMemo(() => {
+    [floorDiff, floorDisp, floorNor, floorRough].forEach((t) => {
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(200, 200);
+      t.needsUpdate = true;
+    });
+  }, [floorDiff, floorDisp, floorNor, floorRough]);
 
   // Rebuild wall UVs from local XY positions — bypasses the mesh's UV map
   // so the texture tiles uniformly. Increase WALL_TILE_SCALE for bigger tiles,
@@ -361,6 +392,22 @@ export function Model(props) {
           material={mat.backHalfLockFrameBottom}
         />
       </group>
+      {/* ── Floor ── */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, -0.05, 0]}
+        receiveShadow
+      >
+        <planeGeometry args={[100, 100]} />
+        <meshStandardMaterial
+          map={floorDiff}
+          displacementMap={floorDisp}
+          displacementScale={0.02}
+          normalMap={floorNor}
+          roughnessMap={floorRough}
+        />
+      </mesh>
+
       {/* ── Wall with door opening cut out ── */}
       <group visible={visibility.wall} scale={[doorScaleX, doorScaleY, 1]}>
         <mesh>
