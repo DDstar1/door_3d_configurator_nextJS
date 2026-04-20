@@ -42,7 +42,7 @@
         position: absolute;
         top: 12px;
         left: 12px;
-        z-index: 10001;
+    z-index: 10;
         display: flex;
         border: 1px solid #e5e7eb;
         border-radius: 6px;
@@ -89,7 +89,7 @@
         width: 100%;
         height: 100%;
         border: none;
-        z-index: 10000;
+     
       }
 
       .door-3d-active #door-3d-iframe {
@@ -183,10 +183,13 @@
       const fullscreenWrapperClass = "door-3d-fullscreen";
 
       if (viewMode === "3d") {
-        // Lock height to the current rendered size so the abs-positioned iframe
-        // has a containing-block height to fill instead of expanding the page.
-        galleryWrapper.style.height =
-          galleryWrapper.getBoundingClientRect().height + "px";
+        // On mobile the gallery height is often 0 or auto — use the wrapper
+        // width instead so the 3D view gets a square frame matching the mobile
+        // image layout. On desktop, keep the rendered height.
+        const rect = galleryWrapper.getBoundingClientRect();
+        const isMobile = window.innerWidth < 768;
+        const lockedHeight = isMobile ? rect.width : (rect.height || rect.width);
+        galleryWrapper.style.height = lockedHeight + "px";
 
         galleryWrapper.classList.add("door-3d-active");
         galleryWrapper.classList.remove(fullscreenWrapperClass);
