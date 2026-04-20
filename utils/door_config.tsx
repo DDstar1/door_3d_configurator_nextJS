@@ -4,6 +4,7 @@ const DOOR_VALUES = {
   TURTYP_OPTION: {
     Gefalzt: "Gefalzt",
     Stumpf: "Stumpf",
+    Schiebetur: "Schiebetür",
   },
 
   BODENDICHTUNG: {

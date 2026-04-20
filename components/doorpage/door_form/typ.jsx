@@ -16,11 +16,14 @@ export default function TypTab() {
         <label className="block mb-1 font-medium text-black">Türtyp:</label>
         <select
           value={doorType}
-          onChange={(e) => setDoorField(DOOR_KEYS.doorType_store, e.target.value)}
+          onChange={(e) =>
+            setDoorField(DOOR_KEYS.doorType_store, e.target.value)
+          }
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
           <option value={TURTYP_OPTION.Stumpf}>Stumpf</option>
           <option value={TURTYP_OPTION.Gefalzt}>Gefalzt</option>
+          <option value={TURTYP_OPTION.Schiebetur}>Schiebetür</option>
         </select>
       </div>
 
@@ -42,7 +45,9 @@ export default function TypTab() {
         <label className="block mb-1 font-medium text-black">Anschlag:</label>
         <select
           value={anschlag}
-          onChange={(e) => setDoorField(DOOR_KEYS.anschlag_store, e.target.value)}
+          onChange={(e) =>
+            setDoorField(DOOR_KEYS.anschlag_store, e.target.value)
+          }
           className="w-full rounded p-2 bg-gray-100 text-black border border-black/20"
         >
           <option value={ANSCHLAG_TYPES.DIN_RIGHT}>DIN rechts</option>
