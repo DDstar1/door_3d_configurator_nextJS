@@ -12,10 +12,11 @@ export function Model(props) {
     <group {...props} dispose={null}>
       <mesh geometry={nodes.Cube.geometry} material={nodes.Cube.material} position={[-0.037, 2.146, 0.062]} rotation={[-Math.PI / 2, -Math.PI / 2, 0]} />
       <mesh geometry={nodes.dc_door.geometry} material={materials.Material} />
-      <mesh geometry={nodes.dc_glass.geometry} material={nodes.dc_glass.material} scale={[1.011, 1, 1]} />
+      <mesh geometry={nodes.dc_glass.geometry} material={nodes.dc_glass.material} />
       <mesh geometry={nodes.dc_rebate_edge.geometry} material={nodes.dc_rebate_edge.material} />
       <mesh geometry={nodes.dc_vent_top.geometry} material={nodes.dc_vent_top.material} />
       <mesh geometry={nodes.dc_vent_bottom.geometry} material={nodes.dc_vent_bottom.material} />
+      <mesh geometry={nodes.dc_door_cut.geometry} material={materials.Material} />
       <mesh geometry={nodes.dc_bodendictung_fill.geometry} material={nodes.dc_bodendictung_fill.material} />
       <mesh geometry={nodes.dc_bodendictung_construct_1.geometry} material={nodes.dc_bodendictung_construct_1.material} />
       <mesh geometry={nodes.dc_bodendictung_construct_2.geometry} material={nodes.dc_bodendictung_construct_2.material} />
@@ -54,8 +55,8 @@ export function Model(props) {
       <mesh geometry={nodes.Cylinder006.geometry} material={nodes.Cylinder006.material} position={[-0.414, 2.096, -0.732]} rotation={[-Math.PI / 2, 1.257, 0]} scale={-0.567} />
       <mesh geometry={nodes.Cube009.geometry} material={nodes.Cube009.material} position={[0.346, 2.137, 0.089]} rotation={[-Math.PI / 2, -Math.PI / 2, 0]} />
       <mesh geometry={nodes.Cube011.geometry} material={nodes.Cube011.material} position={[-1.44, 2.137, 0.089]} rotation={[Math.PI / 2, -Math.PI / 2, 0]} scale={-1} />
-      <mesh geometry={nodes.sc_schiebe_vor_wand.geometry} material={nodes.sc_schiebe_vor_wand.material} position={[0.274, 1.999, 0.112]} rotation={[-Math.PI / 2, -Math.PI / 2, 0]} />
-      <mesh geometry={nodes.wc_wall.geometry} material={nodes.wc_wall.material} scale={[1.83, 1, 1]} />
+      <mesh geometry={nodes.sc_schiebe_vor_wand.geometry} material={nodes.sc_schiebe_vor_wand.material} />
+      <mesh geometry={nodes.wc_wall.geometry} material={nodes.wc_wall.material} />
     </group>
   )
 }

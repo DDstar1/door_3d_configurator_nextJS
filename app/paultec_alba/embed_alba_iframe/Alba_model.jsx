@@ -84,7 +84,7 @@ export function Model(props) {
 
   const [floorDiff, floorDisp] = useTexture([
     "/textures/plank_flooring_textures/plank_flooring_04_diff_4k.jpg",
-    "/textures/plank_flooring_textures/plank_flooring_04_disp_4k.png",
+    "/textures/plank_flooring_textures/plank_flooring_04_disp_4k.jpg",
   ]);
   const floorNor = useLoader(
     EXRLoader,
@@ -161,9 +161,7 @@ export function Model(props) {
     boden: boden !== DOOR_VALUES.BODENDICHTUNG.OHNE_BODENDICHTUNG,
     rebateEdge: doorType === DOOR_VALUES.TURTYP_OPTION.Gefalzt,
     glass: verglasung !== DOOR_VALUES.VERGLASUNG_OPTIONS.OHNE_VERGLASUNG,
-    wall:
-      zargen !== DOOR_VALUES.ZARGEN_OPTIONS.OHNE_ZARGEN ||
-      doorType === DOOR_VALUES.TURTYP_OPTION.Schiebetur,
+    wall: doorType === DOOR_VALUES.TURTYP_OPTION.Schiebetur,
 
     topVent:
       vent === DOOR_VALUES.LUEFTUNGSBOHRUNG.UNTEN ||
@@ -172,8 +170,12 @@ export function Model(props) {
       vent === DOOR_VALUES.LUEFTUNGSBOHRUNG.OBEN ||
       vent === DOOR_VALUES.LUEFTUNGSBOHRUNG.UNTEN_UND_OBEN,
 
-    isbander2tlg: doorType === DOOR_VALUES.TURTYP_OPTION.Gefalzt,
-    isbanderPivot: doorType === DOOR_VALUES.TURTYP_OPTION.Stumpf,
+    isbander2tlg:
+      doorType === DOOR_VALUES.TURTYP_OPTION.Gefalzt &&
+      doorType !== DOOR_VALUES.TURTYP_OPTION.Schiebetur,
+    isbanderPivot:
+      doorType === DOOR_VALUES.TURTYP_OPTION.Stumpf &&
+      doorType !== DOOR_VALUES.TURTYP_OPTION.Schiebetur,
 
     isBB: schloss.includes("BB"),
     isWC: schloss.includes("WC"),
@@ -234,6 +236,7 @@ export function Model(props) {
         dispose={null}
       >
         <mesh geometry={nodes.dc_door.geometry} material={mat.door} />
+
         <mesh
           geometry={nodes.dc_glass.geometry}
           visible={visibility.glass}
@@ -407,17 +410,31 @@ export function Model(props) {
           roughnessMap={floorRough}
         />
       </mesh>
-
+      <mesh
+        geometry={nodes.sc_schiebe_vor_wand.geometry}
+        material={nodes.sc_schiebe_vor_wand.material}
+      />
       {/* ── Wall with door opening cut out ── */}
-      <group visible={visibility.wall} scale={[doorScaleX, doorScaleY, 1]}>
-        <mesh>
-          <meshStandardMaterial {...wallTextures} />
-          <Geometry>
-            <Base geometry={wallGeom} />
-            <Subtraction geometry={nodes.fc_zargen_cut.geometry} />
-          </Geometry>
-        </mesh>
-      </group>
+      {(() => {
+        const isSchiebOhneZarge =
+          doorType === DOOR_VALUES.TURTYP_OPTION.Schiebetur &&
+          zargen === DOOR_VALUES.ZARGEN_OPTIONS.OHNE_ZARGEN;
+        const cutGeom = isSchiebOhneZarge
+          ? nodes.dc_door_cut.geometry
+          : nodes.fc_zargen_cut.geometry;
+
+        return (
+          <group visible={visibility.wall} scale={[doorScaleX, doorScaleY, 1]}>
+            <mesh>
+              <meshStandardMaterial {...wallTextures} />
+              <Geometry>
+                <Base geometry={wallGeom} />
+                <Subtraction geometry={cutGeom} />
+              </Geometry>
+            </mesh>
+          </group>
+        );
+      })()}
     </group>
   );
 }
