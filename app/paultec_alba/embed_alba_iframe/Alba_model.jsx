@@ -36,7 +36,9 @@ export function Model(props) {
   const vent = useDoorStore((s) => s.door.lueftung_store);
 
   const door_collection_ref = useRef();
+  const sc_schiebe_collection_ref = useRef();
   const frame_collection_ref = useRef();
+  const wall_collection_ref = useRef();
   const lock_collection_front_ref = useRef();
   const lock_collection_back_ref = useRef();
   const bander_collection_ref = useRef();
@@ -218,13 +220,20 @@ export function Model(props) {
   }, [doorWidth, doorHeight, anschlag]); // ✅ re-runs when anschlag changes
 
   /* ===============================
-     FRAME POSITION — recalculate 
+     FRAME/WALL POSITION — recalculate 
   =============================== */
   useEffect(() => {
     if (!frame_collection_ref.current) return;
 
-    frame_collection_ref.current.position.z =
-      doorType === DOOR_VALUES.TURTYP_OPTION.Gefalzt ? 0 : 0.01;
+    const isSchiebe = doorType === DOOR_VALUES.TURTYP_OPTION.Schiebetur;
+    const zOffset = isSchiebe
+      ? 5
+      : doorType === DOOR_VALUES.TURTYP_OPTION.Gefalzt
+        ? 0
+        : 0.01;
+    frame_collection_ref.current.position.z = zOffset;
+    if (wall_collection_ref.current)
+      wall_collection_ref.current.position.z = isSchiebe ? -0.015 : 0;
   }, [doorType]);
 
   return (
@@ -410,10 +419,16 @@ export function Model(props) {
           roughnessMap={floorRough}
         />
       </mesh>
-      <mesh
-        geometry={nodes.sc_schiebe_vor_wand.geometry}
-        material={nodes.sc_schiebe_vor_wand.material}
-      />
+      <group
+        ref={sc_schiebe_collection_ref}
+        visible={doorType === DOOR_VALUES.TURTYP_OPTION.Schiebetur}
+        dispose={null}
+      >
+        <mesh
+          geometry={nodes.sc_schiebe_vor_wand.geometry}
+          material={nodes.sc_schiebe_vor_wand.material}
+        />
+      </group>
       {/* ── Wall with door opening cut out ── */}
       {(() => {
         const isSchiebOhneZarge =
@@ -424,7 +439,11 @@ export function Model(props) {
           : nodes.fc_zargen_cut.geometry;
 
         return (
-          <group visible={visibility.wall} scale={[doorScaleX, doorScaleY, 1]}>
+          <group
+            ref={wall_collection_ref}
+            visible={visibility.wall}
+            scale={[doorScaleX, doorScaleY, 1]}
+          >
             <mesh>
               <meshStandardMaterial {...wallTextures} />
               <Geometry>

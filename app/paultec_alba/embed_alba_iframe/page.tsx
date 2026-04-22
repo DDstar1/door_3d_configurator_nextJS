@@ -60,6 +60,8 @@ export default function AlbaCanva() {
         camera={{ position: [0, 1, 2] }}
         className="flex-1 bg-[#1f1f1f]"
       >
+        <fog attach="fog" args={["#1f1f1f", 10, 40]} />
+
         <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
           <GizmoViewport />
         </GizmoHelper>
