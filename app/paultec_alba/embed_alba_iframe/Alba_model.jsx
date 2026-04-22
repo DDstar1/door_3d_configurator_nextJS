@@ -9,6 +9,7 @@ import { useLoader } from "@react-three/fiber";
 import { Geometry, Base, Subtraction } from "@react-three/csg";
 import * as THREE from "three";
 import { EXRLoader } from "three/addons/loaders/EXRLoader.js";
+import { useShallow } from "zustand/react/shallow";
 import { useDoorStore } from "@/store/door_store";
 import { DOOR_VALUES } from "@/utils/door_config";
 import {
@@ -24,16 +25,31 @@ export function Model(props) {
   /* ===============================
      GLOBAL STORE VALUES
   =============================== */
-  const verglasung = useDoorStore((s) => s.door.verglasung_store);
-  const doorWidth = useDoorStore((s) => s.door.width_store);
-  const doorHeight = useDoorStore((s) => s.door.height_store);
-  const schloss = useDoorStore((s) => s.door.schloss_store);
-  const doorType = useDoorStore((s) => s.door.doorType_store);
-  const anschlag = useDoorStore((s) => s.door.anschlag_store);
-  const zargen = useDoorStore((s) => s.door.zarge_store);
-  const band = useDoorStore((s) => s.door.band_store);
-  const boden = useDoorStore((s) => s.door.boden_store);
-  const vent = useDoorStore((s) => s.door.lueftung_store);
+  const {
+    verglasung,
+    doorWidth,
+    doorHeight,
+    schloss,
+    doorType,
+    anschlag,
+    zargen,
+    band,
+    boden,
+    vent,
+  } = useDoorStore(
+    useShallow((s) => ({
+      verglasung: s.door.verglasung_store,
+      doorWidth: s.door.width_store,
+      doorHeight: s.door.height_store,
+      schloss: s.door.schloss_store,
+      doorType: s.door.doorType_store,
+      anschlag: s.door.anschlag_store,
+      zargen: s.door.zarge_store,
+      band: s.door.band_store,
+      boden: s.door.boden_store,
+      vent: s.door.lueftung_store,
+    })),
+  );
 
   const door_collection_ref = useRef();
   const sc_schiebe_collection_ref = useRef();
@@ -163,7 +179,7 @@ export function Model(props) {
     boden: boden !== DOOR_VALUES.BODENDICHTUNG.OHNE_BODENDICHTUNG,
     rebateEdge: doorType === DOOR_VALUES.TURTYP_OPTION.Gefalzt,
     glass: verglasung !== DOOR_VALUES.VERGLASUNG_OPTIONS.OHNE_VERGLASUNG,
-    wall: doorType === DOOR_VALUES.TURTYP_OPTION.Schiebetur,
+    wall: doorType === DOOR_VALUES.TURTYP_OPTION.Schiebetur || zargen !== DOOR_VALUES.ZARGEN_OPTIONS.OHNE_ZARGEN,
 
     topVent:
       vent === DOOR_VALUES.LUEFTUNGSBOHRUNG.UNTEN ||
@@ -235,15 +251,16 @@ export function Model(props) {
     if (!frame_collection_ref.current) return;
 
     const isSchiebe = doorType === DOOR_VALUES.TURTYP_OPTION.Schiebetur;
+    const hasZarge = zargen !== DOOR_VALUES.ZARGEN_OPTIONS.OHNE_ZARGEN;
     const zOffset = isSchiebe
-      ? -0.015
+      ? hasZarge ? -0.03 : -0.015
       : doorType === DOOR_VALUES.TURTYP_OPTION.Gefalzt
         ? 0
         : 0.01;
     frame_collection_ref.current.position.z = zOffset;
-wall_collection_ref.current.position.z = isSchiebe ? -0.015 : 0;
+    wall_collection_ref.current.position.z = isSchiebe ? (hasZarge ? -0.03 : -0.015) : 0;
       
-  }, [doorType]);
+  }, [doorType, zargen]);
 
   return (
     <group {...props} scale={[mirrorX, 1, 1]} dispose={null}>

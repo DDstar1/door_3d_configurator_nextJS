@@ -19,7 +19,6 @@ export const useDoorStore = create<DoorStore>((set) => ({
   setDoorField: (field, value) =>
     set((state) => {
       console.log("Updating door field:", field, "=>", value);
-
       return {
         door: {
           ...state.door,

@@ -1,22 +1,33 @@
 "use client";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import {
   OrbitControls,
   GizmoHelper,
   GizmoViewport,
   Environment,
   Grid,
+  useProgress,
 } from "@react-three/drei";
 import { useEffect, useRef, useState, Suspense } from "react";
 import { Model } from "./Alba_model";
 import { useDoorStore } from "@/store/door_store";
 import { mapDoorOptions } from "@/utils/3d_utils/3d_AI_mapDoorOptions";
 
+function SceneInvalidator() {
+  const { invalidate } = useThree();
+  const door = useDoorStore((s) => s.door);
+  useEffect(() => {
+    invalidate();
+  }, [door, invalidate]);
+  return null;
+}
+
 export default function AlbaCanva() {
   const setDoorField = useDoorStore((state) => state.setDoorField);
 
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { active: sceneLoading } = useProgress();
 
   useEffect(() => {
     async function handleMessage(event: MessageEvent) {
@@ -58,9 +69,12 @@ export default function AlbaCanva() {
     <div className="relative flex flex-col w-full h-screen">
       <Canvas
         shadows
+        frameloop="demand"
+        dpr={[1, 2]}
         camera={{ position: [0, 1, 2] }}
         className="flex-1 bg-[#1f1f1f]"
       >
+        <SceneInvalidator />
         <fog attach="fog" args={["#1f1f1f", 10, 40]} />
 
         <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
@@ -87,7 +101,7 @@ export default function AlbaCanva() {
       </Canvas>
 
       {/* 🔴 Red Transparent Spinner Overlay */}
-      {isLoading && (
+      {(isLoading || sceneLoading) && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50 transition-opacity duration-300">
           <div className="flex flex-col items-center">
             {/* Spinner */}
