@@ -87,6 +87,8 @@ export const getMetrics = (
     worldZ: pos.z,
     minX,
     maxX,
+    minY,
+    maxY,
     left: minX,
     right: maxX,
     helper,

@@ -204,20 +204,29 @@ export function Model(props) {
 
     let band_pos_x = 0;
     let lock_collection_pos_x = 0;
+    let sc_schiebe_collection_pos_y = 0;
 
     if (mirrorX == 1) {
       band_pos_x = door_metrics.maxX - door_metrics.maxX / doorScaleX;
       lock_collection_pos_x =
         door_metrics.minX - door_metrics.minX / doorScaleX;
-    } else {
+    } else if (mirrorX == -1) {
       band_pos_x = door_metrics.minX / doorScaleX - door_metrics.minX;
       lock_collection_pos_x =
         door_metrics.maxX / doorScaleX - door_metrics.maxX;
+    } 
+     if (doorType === DOOR_VALUES.TURTYP_OPTION.Schiebetur) {
+      sc_schiebe_collection_pos_y =
+        door_metrics.maxY - door_metrics.maxY / doorScaleY;
+        console.log("Schiebe door - sc_schiebe_collection_pos_y: ", sc_schiebe_collection_pos_y);
     }
     bander_collection_ref.current.position.x = band_pos_x;
     lock_collection_front_ref.current.position.x = lock_collection_pos_x;
     lock_collection_back_ref.current.position.x = lock_collection_pos_x;
-  }, [doorWidth, doorHeight, anschlag]); // ✅ re-runs when anschlag changes
+    sc_schiebe_collection_ref.current.position.y = sc_schiebe_collection_pos_y;
+
+
+  }, [doorWidth, doorHeight, anschlag, doorType]); // ✅ re-runs when anschlag changes
 
   /* ===============================
      FRAME/WALL POSITION — recalculate 
@@ -423,6 +432,7 @@ export function Model(props) {
         ref={sc_schiebe_collection_ref}
         visible={doorType === DOOR_VALUES.TURTYP_OPTION.Schiebetur}
         dispose={null}
+         scale={[doorScaleX, 1, 1]}
       >
         <mesh
           geometry={nodes.sc_schiebe_vor_wand.geometry}
