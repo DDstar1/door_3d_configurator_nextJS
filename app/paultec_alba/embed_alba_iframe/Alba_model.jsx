@@ -236,13 +236,13 @@ export function Model(props) {
 
     const isSchiebe = doorType === DOOR_VALUES.TURTYP_OPTION.Schiebetur;
     const zOffset = isSchiebe
-      ? 5
+      ? -0.015
       : doorType === DOOR_VALUES.TURTYP_OPTION.Gefalzt
         ? 0
         : 0.01;
     frame_collection_ref.current.position.z = zOffset;
-    if (wall_collection_ref.current)
-      wall_collection_ref.current.position.z = isSchiebe ? -0.015 : 0;
+wall_collection_ref.current.position.z = isSchiebe ? -0.015 : 0;
+      
   }, [doorType]);
 
   return (
